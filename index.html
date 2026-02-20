@@ -2554,11 +2554,38 @@ const outputLookup = {
                                 ${selected.map(a => `<th class="check-col"><div class="header-cell-content"><img src="${iconPath}${a.img}" class="matrix-icon" onerror="this.src='https://placehold.co/18x18/111/d4af37?text=?'"><div class="header-text-rotated">${a.name} ${a.category === 'xf' ? '<br><span class="text-red-500 text-[7px]">[XF]</span>' : ''}</div></div></th>`).join('')}
                             </tr>
                             <tr><td colspan="${selected.length + 1}" class="section-divider">Outputs</td></tr>
-                            ${allAttributes.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="gold-text font-black text-[7px]">${outputLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-white font-black">${Object.values(a.outputGroups).flat().includes(k) ? '●' : ''}</td>`).join('')}</tr>`).join('')}
+                            ${allAttributes.filter(filterRow).map(key => `
+    <tr>
+        <td class="sticky-col cursor-pointer hover:bg-white/5" onclick="filterTag='${key}'; filterType='output'; render('list')">
+            <div class="text-[7px] gold-text font-black gold-text">${outputLookup[key]?.l || key}</div>
+            <div class="text-[7px] text-zinc-500 font-medium leading-tight">${outputLookup[key]?.d || ''}</div>
+        </td>
+        ${selected.map(a => {
+            const has = Object.values(a.outputGroups).flat().includes(key);
+            return `<td class="check-col">${has ? '●' : ''}</td>`;
+        }).join('')}
+    </tr>
+`).join('')}
                             <tr><td colspan="${selected.length + 1}" class="section-divider">Activations</td></tr>
-                            ${allActivations.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="text-green-500 font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-green-500 font-black">${a.triggers.active.includes(k) ? '✓' : ''}</td>`).join('')}</tr>`).join('')}
+                            ${allActivations.filter(filterRow).map(key => `
+    <tr>
+        <td class="sticky-col cursor-pointer hover:bg-white/5" onclick="filterTag='${key}'; filterType='trigger'; render('list')">
+            <div class="text-[10px] text-green-500 font-black uppercase">${triggerLookup[key]?.l || key}</div>
+            <div class="text-[8px] text-zinc-500 font-medium leading-tight">${triggerLookup[key]?.d || ''}</div>
+        </td>
+        ${selected.map(a => `<td class="check-col">${a.triggers.active.includes(key) ? '●' : ''}</td>`).join('')}
+    </tr>
+`).join('')}
                             <tr><td colspan="${selected.length + 1}" class="section-divider">Deactivations</td></tr>
-                            ${allDeactivations.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="text-red-500 font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-red-500 font-black">${a.triggers.deactive.includes(k) ? '✕' : ''}</td>`).join('')}</tr>`).join('')}
+                            ${allDeactivations.filter(filterRow).map(key => `
+    <tr>
+        <td class="sticky-col cursor-pointer hover:bg-white/5" onclick="filterTag='${key}'; filterType='trigger'; render('list')">
+            <div class="text-[10px] text-red-500 font-black uppercase text-red-500/80">${triggerLookup[key]?.l || key}</div>
+            <div class="text-[8px] text-zinc-500 font-medium leading-tight">${triggerLookup[key]?.d || ''}</div>
+        </td>
+        ${selected.map(a => `<td class="check-col">${a.triggers.deactive.includes(key) ? '●' : ''}</td>`).join('')}
+    </tr>
+`).join('')}
                         </table>
                     </div>`;
 
