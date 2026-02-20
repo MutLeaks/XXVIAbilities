@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXVI Abilities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; opacity: 0.15; pointer-events: none; }
+        body { margin: 0; background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; font-size: 10px; overflow-x: hidden; letter-spacing: -0.01em; min-height: 100vh; display: flex; flex-direction: column; }
+        .card-bg { background: rgba(10, 10, 10, 0.98); border: 1px solid #222; backdrop-filter: blur(15px); }
+        .gold-text { color: #d4af37; }
+        
+        .matrix-container { overflow-x: auto; border: 1px solid #222; width: 100%; }
+        .matrix-table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+        .matrix-table th, .matrix-table td { border: 1px solid #222; padding: 4px; vertical-align: middle; }
+        
+        .sticky-col { 
+            position: sticky; left: 0; background: #0d0d0d; z-index: 10; 
+            width: 110px; min-width: 110px; box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+        }
+
+        .header-cell-content { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .header-text-rotated { text-align: center; line-height: 1.1; margin-top: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+        
+        .ability-icon { width: 16px; height: 16px; object-fit: contain; }
+        .ability-icon-lg { width: 32px; height: 32px; object-fit: contain; }
+        .matrix-icon { width: 18px; height: 18px; object-fit: contain; }
+
+        .check-col { width: 50px; min-width: 50px; text-align: center; font-size: 12px; }
+        .portal-overlay { background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        input[type="checkbox"] { width: 12px; height: 12px; accent-color: #d4af37; cursor: pointer; }
+        .nav-tab.active { color: white; border-bottom: 2px solid #d4af37; }
+        .section-divider { background: #151515; font-weight: 900; text-align: center; color: #d4af37; font-size: 8px; letter-spacing: 1.5px; padding: 4px !important; text-transform: uppercase; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 2px; height: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #d4af37; }
+
+        .group-item:not(:last-child) {
+            border-bottom: 1px solid #222;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop id="bg-video"><source src="Mainmenu.mp4" type="video/mp4"></video>
+    
+    <div id="main-wrapper" class="flex flex-col flex-1 relative w-full">
+        <header class="p-2 border-b border-zinc-900 sticky top-0 bg-black/95 z-40">
+            <div class="flex items-center justify-between mb-1">
+                <h1 class="font-black gold-text uppercase text-[8px] tracking-widest cursor-pointer" onclick="resetAndHome()">XXVI Abilities</h1>
+                <div id="vs-count-main"></div>
+            </div>
+            <div class="flex gap-4 justify-center text-[8px] font-black uppercase">
+                <div id="tab-reg" class="cursor-pointer nav-tab" onclick="setGlobalTab('reg')">Abilities</div>
+                <div id="tab-xf" class="cursor-pointer nav-tab" onclick="setGlobalTab('xf')">X-Factors</div>
+            </div>
+        </header>
+        <main id="app" class="p-1.5 w-full flex-1 flex flex-col pb-20"></main>
+    </div>
+
+    <script>
+        const iconPath = "Assets/AbilityIcons/"; 
+const triggerLookup = {
+    "ActiveTackleType": { "l": "Active Tackle Type", "d": "Identifies the specific tackle mechanic being executed." },
+    "CorrectGuessOnCommit": { "l": "Correct Guess On Commit", "d": "Triggers if the defense correctly guesses Run or Pass." },
+    "CurrentCutMoveInRoute": { "l": "Current Cut Move In Route", "d": "Identifies the current break or cut in the receiver's route." },
+    "CurrentDown": { "l": "Current Down", "d": "Checks the current play's down (1st, 2nd, 3rd, or 4th)." },
+    "DownfieldThrowDistanceFromLOS": { "l": "Throw Distance from LOS", "d": "The depth of the pass relative to the Line of Scrimmage." },
+    "DownFieldThrowDistanceFromQBUnder30": { "l": "Throw Distance From QB Under 30", "d": "Checks if the throw distance relative to the QB is under 30 yards." },
+    "EngagedInBlock": { "l": "Engaged In Block", "d": "Checks if the player is currently in a blocking interaction." },
+    "Gamestyle": { "l": "Game Style", "d": "Identifies the current game difficulty or play style (Arcade, Simulation, Competitive)." },
+    "GetPlayerStaminaPercent": { "l": "Player Stamina Percent", "d": "Calculates the player's remaining stamina as a percentage." },
+    "GetPlayerYardsPastLOS": { "l": "Player Yards Past LOS", "d": "Measures the exact distance a player has traveled past the Line of Scrimmage." },
+    "HadMadeCatch": { "l": "Has Made Catch", "d": "Checks if the receiver has already successfully caught the ball." },
+    "HasMPCatchPositionalAdvantage": { "l": "MP Catch Positional Advantage", "d": "Checks if the player has better positioning in a Multi-Player contested catch." },
+    "IncorrectGuessOnCommit": { "l": "Incorrect Guess On Commit", "d": "Triggers if the defense guesses the wrong play type." },
+    "InThePocket": { "l": "In The Pocket", "d": "Checks if the player is within the pass protection zone." },
+    "IsBetweenTheNumbers": { "l": "Is Between The Numbers", "d": "Checks if the play is occurring in the middle third of the field." },
+    "IsBulletPass": { "l": "Is Bullet Pass", "d": "Checks if the throw is a high-velocity bullet." },
+    "IsCloseGame": { "l": "Is Close Game", "d": "Checks if the score difference is within a narrow margin." },
+    "IsDesignedRun": { "l": "Is Designed Run", "d": "Checks if the play is a primary run call, not a QB scramble." },
+    "IsDomeGame": { "l": "Is Dome Game", "d": "Checks for controlled stadium environments." },
+    "IsFirstSackAttempt": { "l": "Is First Sack Attempt", "d": "Triggers on the very first attempt to sack the QB during a play." },
+    "IsHalfwayThroughFourthQuarter": { "l": "Halfway Through 4th Quarter", "d": "Triggers when the clock is under 7:30 in the 4th quarter." },
+    "IsInManDefense": { "l": "Is In Man Defense", "d": "Checks if the defense is currently in man-to-man coverage." },
+    "IsInsideRun": { "l": "Is Inside Run", "d": "Checks for runs between the offensive tackles." },
+    "IsInRedZone": { "l": "Is In Red Zone", "d": "Checks if the ball is inside the opponent's 20-yard line." },
+    "IsInSlot": { "l": "Is In Slot", "d": "Checks if the player is aligned in the slot position." },
+    "IsInThePocket": { "l": "Is In The Pocket (QB)", "d": "Checks if the QB is currently within the pass-blocking pocket." },
+    "IsInZoneDefense": { "l": "Is In Zone Defense", "d": "Checks if the defense is currently using a zone scheme." },
+    "IsKick45YardsOrLess": { "l": "Kick 45 Yards Or Less", "d": "Checks the distance for field goal attempts." },
+    "IsLinedUpInBackfield": { "l": "Lined Up In Backfield", "d": "Checks if the player is positioned in the backfield at the snap." },
+    "IsLosing": { "l": "Is Losing", "d": "Checks if the player's team is currently behind in points." },
+    "IsOnGoalline": { "l": "Is On Goal Line", "d": "Triggers when the ball is positioned on the goal line." },
+    "IsOutsideRun": { "l": "Is Outside Run", "d": "Checks for runs toward the sidelines (e.g., Toss, Stretch)." },
+    "IsPass11+YardsPastLOS": { "l": "Pass 11+ Yards Past LOS", "d": "Checks if the pass depth is 11 yards or greater from the Line of Scrimmage." },
+    "IsPass19+YardsFromLOS": { "l": "Pass 19+ Yards Past LOS", "d": "Checks if the pass depth is 19 yards or greater." },
+    "IsPass25+YardsPastLOS": { "l": "Pass 25+ Yards Past LOS", "d": "Checks if the throw depth exceeds 25 yards past the Line of Scrimmage." },
+    "IsPass40+Yards": { "l": "Pass 40+ Yards", "d": "Checks for passes exceeding 40 yards." },
+    "IsPassBetween9And21YardsFromLOS": { "l": "Pass Between 9-21 Yards", "d": "Checks for throws in the 9-21 yard depth range." },
+    "IsPassingPlay": { "l": "Is Passing Play", "d": "General check for offensive pass play calls." },
+    "IsPassPlay": { "l": "Is Pass Play", "d": "Checks if the current offensive action is a pass." },
+    "IsPassTargetWithin20YardsOfQB": { "l": "Pass Target Within 20 Yards of QB", "d": "Checks if the target is within a 20-yard radius of the QB." },
+    "IsPassWithBulletSpeed": { "l": "Pass With Bullet Speed", "d": "Triggers when the pass is thrown with bullet velocity." },
+    "IsPassWithHighMech": { "l": "Pass With High Mechanic", "d": "Triggers when a High Pass (LB/L1) is used." },
+    "IsPassWithLowMech": { "l": "Pass With Low Mechanic", "d": "Triggers when a Low Pass (LT/L2) is used." },
+    "IsPassWithLobSpeed": { "l": "Pass With Lob Speed", "d": "Triggers when a lob pass is thrown." },
+    "IsPassWithTouchSpeed": { "l": "Pass With Touch Speed", "d": "Triggers when a touch pass is thrown." },
+    "IsPTMNGLocoActive": { "l": "Locomotion Active", "d": "Checks if the player's locomotion or movement ability is currently active." },
+    "IsQBLeadingPass": { "l": "Is QB Leading Pass", "d": "Checks if the user is using the stick to lead the receiver." },
+    "IsQBUnderPressure": { "l": "Is QB Under Pressure", "d": "Checks if nearby defenders are applying a pressure penalty to the QB." },
+    "IsRACCatch": { "l": "Is RAC Catch", "d": "Checks if the receiver uses the 'Run After Catch' mechanic." },
+    "IsRunPlay": { "l": "Is Run Play", "d": "General check for offensive run play calls." },
+    "IsScreenPass": { "l": "Is Screen Pass", "d": "Checks if the play is a screen (HB, WR, or TE)." },
+    "IsThirdOrFourthDown": { "l": "Is 3rd Or 4th Down", "d": "Checks if the offense is on 3rd or 4th down." },
+    "IsThirdOrFourthQuarter": { "l": "Is 3rd Or 4th Quarter", "d": "Triggers during the second half of the game." },
+    "IsThrowIntoDoubleCoverage": { "l": "Throw Into Double Coverage", "d": "Detects if the pass target is guarded by two or more defenders." },
+    "IsThrowTargetInsideNumbers": { "l": "Throw Target Inside Numbers", "d": "Checks if the pass target is between the field numbers." },
+    "IsThrowTargetOutsideHashmarks": { "l": "Throw Target Outside Hashmarks", "d": "Checks if the target is in the sideline areas." },
+    "IsThrowToSameSideAsBody": { "l": "Throw To Same Side As Body", "d": "Checks if the QB is throwing to the side of their dominant arm." },
+    "IsWithinGoalLine": { "l": "Is Within Goal Line", "d": "Checks if the ball is within the 5-yard line." },
+    "NumBrokenTacklesThisPlay": { "l": "Broken Tackles This Play", "d": "Counts how many tackles the runner has broken on the current play." },
+    "NumHurdleSuccesses_ThisPlay": { "l": "Hurdle Successes This Play", "d": "Counts successful hurdles performed by the ball carrier." },
+    "NumJukeSuccesses_ThisPlay": { "l": "Juke Successes This Play", "d": "Counts successful juke moves performed by the ball carrier." },
+    "NumSpinSuccesses_ThisPlay": { "l": "Spin Successes This Play", "d": "Counts successful spin moves performed by the ball carrier." },
+    "NumStiffArmSuccesses_ThisPlay": { "l": "Stiff Arm Successes This Play", "d": "Counts successful stiff arms performed by the ball carrier." },
+    "NumTruckSuccesses_ThisPlay": { "l": "Truck Successes This Play", "d": "Counts successful truck moves performed by the ball carrier." },
+    "OnHomeTeam": { "l": "On Home Team", "d": "Checks if the player is the home team." },
+    "OnTheRun": { "l": "On The Run", "d": "Checks if the player is passing or catching while in a full movement state." },
+    "PlayerVelocityDirection": { "l": "Player Velocity Direction", "d": "Calculates the player's current speed and direction." },
+    "PlayInfo_OffenseType": { "l": "Offense Play Type", "d": "Determines the category of the offensive play call." },
+    "RanPlay5+ThisQ": { "l": "Ran Play 5+ Times This Quarter", "d": "Checks if the same play has been called 5 or more times in the current quarter." },
+    "RequestedCatchMechanic": { "l": "Requested Catch Mechanic", "d": "Checks for user input regarding catch type (Aggressive, Possession, RAC)." },
+    "RequestedTackleMechanic": { "l": "Requested Tackle Mechanic", "d": "Checks for specific user inputs like aggressive or conservative tackles." },
+    "SnapPosition": { "l": "Snap Position", "d": "The specific position the player occupies at the line (Slot, Wide, etc.)." },
+    "TotalCutMovesInRoute": { "l": "Total Cut Moves In Route", "d": "The total number of cuts defined in the assigned route." },
+    "ZoneDefender": { "l": "Zone Defender", "d": "Checks if the player is assigned to a zone in the defensive scheme." }
+};
+
+
+const outputLookup = {
+    // --- CATCHING & RECEIVING ---
+    "Catching_ChanceBlockCatchTackleOutcome_Knockout": { l: "Catching_ChanceBlockCatchTackleOutcome_Knockout", d: "Reduces the chance of the ball being knocked out while being tackled during a catch." },
+    "Catching_ChanceBlockMpCatchOutcome_DropKnockout": { l: "Catching_ChanceBlockMpCatchOutcome_DropKnockout", d: "Reduces 'drop-knockouts' in multiplayer contested catch animations." },
+    "Catching_ChanceDisablePostCatchKnockouts": { l: "Catching_ChanceDisablePostCatchKnockouts", d: "Prevents jarring the ball loose once the catch is secured." },
+    "Catching_ChanceMidAirOutcome_Catch": { l: "Catching_ChanceMidAirOutcome_Catch", d: "Boosts success for diving, leaping, and jumping catches." },
+    "Catching_ChanceMpCatchWin": { l: "Catching_ChanceMpCatchWin", d: "Increases the win rate in multiplayer catching animations." },
+    "Catching_ChanceSpCatch": { l: "Catching_ChanceSpCatch", d: "Increases WR Catch chance in singleplayer catching scenarios." },
+    "Catching_ReceiverWinOnCutVsLowRatedNonDB": { l: "Catching_ReceiverWinOnCutVsLowRatedNonDB", d: "Guarantees a clean break on routes versus LBs and DL." },
+    "Catching_DisableCatchMechanicPenalty": { l: "Catching_DisableCatchMechanicPenalty", d: "Removes the movement and speed penalty immediately following a catch." },
+    "Catching_NoPenaltyForDiveCatch": { l: "Catching_NoPenaltyForDiveCatch", d: "Removes catching penalties associated with diving for the ball." },
+    "Catching_ChanceReceiverWinOnCut": { l: "Catching_ChanceReceiverWinOnCut", d: "Increases the likelihood of the receiver gaining separation on their route cut." },
+    "Catching_ChanceToStack": { l: "Catching_ChanceToStack", d: "Grants the receiver the ability to 'stack' (get behind) the defender after a win." },
+    "Catching_ChanceMpCatchWinVsDL": { l: "Catching_ChanceMpCatchWinVsDL", d: "Significant boost to winning contested catches against defensive linemen." },
+    "Catching_ChanceMpCatchWinVsLB": { l: "Catching_ChanceMpCatchWinVsLB", d: "Significant boost to winning contested catches against linebackers." },
+    "Catching_ChanceCanUseFastDirect": { l: "Catching_ChanceCanUseFastDirect", d: "Allows receivers to react instantly to playmaker/directional inputs." },
+    "Catching_ChanceDisablePhysicsForceKnockout": { l: "Catching_ChanceDisablePhysicsForceKnockout", d: "Prevents the ball from being jarred loose by momentum-based hits or collisions." },
+    "Catching_ChancePressOutcome_OffWin": { l: "Catching_ChancePressOutcome_OffWin", d: "Guarantees a successful release for the receiver when facing standard press coverage." },
+    "Catching_ChancePressOutcome_OffSuperWin": { l: "Catching_ChancePressOutcome_OffSuperWin", d: "Triggers a dominant 'Super Win' release animation, leaving the press defender behind." },
+    "Catching_ChancePressDirection_DefenderAlwaysWrong": { l: "Catching_ChancePressDirection_DefenderAlwaysWrong", d: "Forces the defender to shade the wrong way during a press, ensuring a clean release." },
+
+    // --- PASSING & QB ---
+    "Passing_PerfectAccuracy": { l: "Passing_PerfectAccuracy", d: "Guarantees the pass hits the lead point, bypassing RNG/accuracy penalties." },
+    "Passing_AllowAgileBreakSackAnims": { l: "Passing_AllowAgileBreakSackAnims", d: "Enables mobile-style sack evasion animations." },
+    "Passing_AllowPowerBreakSackAnims": { l: "Passing_AllowPowerBreakSackAnims", d: "Enables strength-based animations to break tackle attempts." },
+    "Passing_ChanceImmuneToPressure": { l: "Passing_ChanceImmuneToPressure", d: "Nullifies accuracy penalties and 'errant throws' caused by defensive pressure." },
+    "Passing_PassSpeedMod": { l: "Passing_PassSpeedMod", d: "Increases pass velocity, reducing defender reaction time." },
+    "Passing_ExtraDistanceBeforeHailMaryPassAnim": { l: "Passing_ExtraDistanceBeforeHailMaryPassAnim", d: "Allows longer deep balls before forcing the slow Hail Mary windup." },
+    "Passing_IgnoreOnTheRunThrowPowerPenalties": { l: "Passing_IgnoreOnTheRunThrowPowerPenalties", d: "Eliminates throw power penalties normally associated with throwing on the run." },
+    "Passing_ChanceBreakSackByDB": { l: "Passing_ChanceBreakSackByDB", d: "High success rate to break sacks specifically from defensive backs." },
+    "Passing_ChanceQBCanUseFastDirect": { l: "Passing_ChanceQBCanUseFastDirect", d: "Increases the speed of QB playmaker interactions with receivers." },
+    "Passing_GiftCatchChanceForSp_RB": { l: "Passing_GiftCatchChanceForSp_RB", d: "Drastically reduces catch drops for Running Backs." },
+    "Passing_GiftCatchChanceForSp_TE": { l: "Passing_GiftCatchChanceForSp_TE", d: "Drastically reduces catch drops for Tight Ends." },
+    "Passing_GiftCatchChanceForSp_WR": { l: "Passing_GiftCatchChanceForSp_WR", d: "Drastically reduces catch drops for Wide Receivers." },
+    "Passing_ChanceQbThrow_PerfectLead": { l: "Passing_ChanceQbThrow_PerfectLead", d: "Ensures every pass is perfectly placed ahead of the receiver's momentum." },
+
+    // --- DEFENSE & PASS RUSH ---
+    "CatchingDef_CanDiveCatch": { l: "CatchingDef_CanDiveCatch", d: "Allows defensive players to attempt diving interceptions." },
+    "CatchingDef_ChanceToDiveSwat": { l: "CatchingDef_ChanceToDiveSwat", d: "Allows defenders to dive specifically to swat the ball away." },
+    "Defense_SackRestorePassRushPoints": { l: "Defense_SackRestorePassRushPoints", d: "Restores pass rush move points after a successful sack." },
+    "Defense_FreePassRushMovesAfterFirst": { l: "Defense_FreePassRushMovesAfterFirst", d: "Grants a free secondary pass rush attempt after spending a point." },
+    "BlockingDef_ChanceDefMoveOutcome_DefWin": { l: "BlockingDef_ChanceDefMoveOutcome_DefWin", d: "Increases win chances for pass rush moves." },
+    "BlockingDef_ChanceDefMoveOutcome_DefSuperWin": { l: "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", d: "Increases the chance for dominant 'Super Win' pass rush animations." },
+    "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove": { l: "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", d: "Upgrades standard wins to dominant 'Super Win' animations." },
+    "Defense_DLinePointsOnStops": { l: "Defense_DLinePointsOnStops", d: "Grants bonus pass rush points to the whole line on 3rd/4th down." },
+    "Defense_MaxPassRushPoints": { l: "Defense_MaxPassRushPoints", d: "Increases the maximum pass rush points a defender can hold." },
+    "BlockingDef_BullRushMaxPointsSuperWinCostsDouble": { l: "BlockingDef_BullRushMaxPointsSuperWinCostsDouble", d: "Consumes double points for a Super Bull Rush win." },
+    "BlockingDef_DefMoveCostsDouble": { l: "BlockingDef_DefMoveCostsDouble", d: "Pass rush moves cost twice as many points for increased effect." },
+    "CatchingDef_BreakOnThrowTimeReductionPercent": { l: "CatchingDef_BreakOnThrowTimeReductionPercent", d: "Reduces reaction time, letting defenders break on the ball faster." },
+    "CatchingDef_ChanceBlockCatchTackleOutcome_Catch": { l: "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", d: "Increases the chance to force the receiver into a drop animation." },
+    "CatchingDef_ChanceCatchTackleOutcome_Knockout": { l: "CatchingDef_ChanceCatchTackleOutcome_Knockout", d: "Increases the chance for a defender to jar the ball loose on contact." },
+    "CatchingDef_ChanceMidAirOutcome_Knockout": { l: "CatchingDef_ChanceMidAirOutcome_Knockout", d: "Boosts knockout success against jumping/diving receivers." },
+    "CatchingDef_ChanceMpCatchOutcome_DropKnockout": { l: "CatchingDef_ChanceMpCatchOutcome_DropKnockout", d: "Forces a knockout during contested multiplayer catching animations." },
+    "CatchingDef_PlayBall_BreakChance": { l: "CatchingDef_PlayBall_BreakChance", d: "Increases the defender's ability to 'Play Ball' and disrupt the pass." },
+    "CatchingDef_FatigueRecAfterPressWin": { l: "CatchingDef_FatigueRecAfterPressWin", d: "Drains stamina from the receiver after they lose a press attempt." },
+    "CatchingDef_FatigueRecAfterZoneChuckWin": { l: "CatchingDef_FatigueRecAfterZoneChuckWin", d: "Drains stamina from the receiver after a successful zone chuck." },
+    "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin": { l: "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", d: "Increases win chances without being engaged by a blocker." },
+    "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin": { l: "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", d: "Increases 'Super Win' rate for unengaged defenders." },
+    "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin": { l: "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin", d: "Increases win rate when the defender is double-teamed." },
+    "CatchingDef_ChanceBlockCatchTackleOutcome_Broken": { l: "CatchingDef_ChanceBlockCatchTackleOutcome_Broken", d: "Defender's ability to break up a catch-tackle animation." },
+    "CatchingDef_UnlimitedStaminaOnINT": { l: "CatchingDef_UnlimitedStaminaOnINT", d: "Prevents stamina depletion for the defender following an interception." },
+    "CatchingDef_ChanceDefenderWinOnCut": { l: "CatchingDef_ChanceDefenderWinOnCut", d: "Increases the defender's chance to undercut the route cut." },
+    "CatchingDef_ChanceToHighJump": { l: "CatchingDef_ChanceToHighJump", d: "Allows the defender to perform a maximum-height jump for interceptions." },
+    "CatchingDef_ChanceCounterOutcome_DefWin": { l: "CatchingDef_ChanceCounterOutcome_DefWin", d: "Increases win rate when countering specific offensive maneuvers." },
+    "Defense_PressureDistanceLimit": { l: "Defense_PressureDistanceLimit", d: "Increases the radius at which a defender can apply pressure to the QB." },
+    "Defense_PressurePenaltyMod": { l: "Defense_PressurePenaltyMod", d: "Multiplies the accuracy penalty applied to the QB from pressure." },
+    "BlockingDef_ChanceStandardOutcome_DefSuperWin": { l: "BlockingDef_ChanceStandardOutcome_DefSuperWin", d: "Standard defensive moves are more likely to result in a 'Super Win'." },
+    "BlockingDef_InitialTimerReduction": { l: "BlockingDef_InitialTimerReduction", d: "Reduces the delay before a defender can attempt their first pass rush move." },
+
+    // --- RUNNING & TACKLING ---
+    "Running_NeverStumble": { l: "Running_NeverStumble", d: "Automatically prevents falling or stumbling from minor contact." },
+    "Running_EliteStiffArmBrokenTackleAnims": { l: "Running_EliteStiffArmBrokenTackleAnims", d: "Enables powerful stiff-arm animations to repel tacklers." },
+    "Running_EliteStiffArmMechanicWindow": { l: "Running_EliteStiffArmMechanicWindow", d: "Increases the success window for stiff-arm inputs." },
+    "Running_EliteTruckBrokenTackleAnims": { l: "Running_EliteTruckBrokenTackleAnims", d: "Enables dominant truck animations to run through defenders." },
+    "Running_EliteTruckMechanicWindow": { l: "Running_EliteTruckMechanicWindow", d: "Increases the success window for truck inputs." },
+    "Running_EliteJukeAnims": { l: "Running_EliteJukeAnims", d: "Grants steerable, high-speed juke animations." },
+    "Running_EliteSpinAnims": { l: "Running_EliteSpinAnims", d: "Grants steerable, high-speed spin animations." },
+    "Tackle_FatigueTargetAfterTackle": { l: "Tackle_FatigueTargetAfterTackle", d: "Drains significant stamina from the ballcarrier after a hit stick." },
+    "Tackle_ResetZoneProgressOnTargetAfterTackle": { l: "Tackle_ResetZoneProgressOnTargetAfterTackle", d: "Clears the opponent's X-Factor/Zone progress after a hit stick." },
+    "Tackle_CanHitStickAnyone": { l: "Tackle_CanHitStickAnyone", d: "Allows hit sticks on any runner regardless of size mismatch." },
+    "Tackle_FatigueTacklerAfterTackle": { l: "Tackle_FatigueTacklerAfterTackle", d: "Drains stamina from the tackler (Backlash effect)." },
+    "Running_BlockShedInitialTimerPenalty": { l: "Running_BlockShedInitialTimerPenalty", d: "Forces blockers to hold their blocks longer on designed run plays." },
+    "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove": { l: "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove", d: "High chance to break a multi-defender tackle during a fakeout." },
+    "Running_Chance2ManTackleOutcome_Broken": { l: "Running_Chance2ManTackleOutcome_Broken", d: "Increased chance to break out of a two-man tackle." },
+    "Running_ChanceNManTackleOutcome_Broken": { l: "Running_ChanceNManTackleOutcome_Broken", d: "Increased chance to break out of a multi-man tackle." },
+    "Running_Chance2ManTackleOutcome_Broken_OnStrip": { l: "Running_Chance2ManTackleOutcome_Broken_OnStrip", d: "High success rate to break a 2-man tackle during a strip attempt." },
+    "Running_ChanceNManTackleOutcome_Broken_OnStrip": { l: "Running_ChanceNManTackleOutcome_Broken_OnStrip", d: "High success rate to break a multi-man tackle during a strip attempt." },
+    "Running_Chance2ManTackleOutcome_Broken_OnHitStick": { l: "Running_Chance2ManTackleOutcome_Broken_OnHitStick", d: "High success rate to break a 2-man tackle during a hit stick." },
+    "Running_Chance2ManTackleOutcome_Broken_OnCutStick": { l: "Running_Chance2ManTackleOutcome_Broken_OnCutStick", d: "High success rate to break a 2-man tackle during a cut stick." },
+    "Running_ReplenishStaminaAfterSuccessSkillMove": { l: "Running_ReplenishStaminaAfterSuccessSkillMove", d: "Fully restores stamina after a successful skill move." },
+    "Running_PushThePile_AutoWins": { l: "Running_PushThePile_AutoWins", d: "Guarantees success in 'push the pile' situations for extra yardage." },
+    "Running_EnableSwerveLoco": { l: "Running_EnableSwerveLoco", d: "Enables high-agility 'swerve' locomotion for ballcarriers." },
+    "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick": { l: "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick", d: "Ensures a two-man hit stick tackle successfully downs the runner." },
+    "Tackle_HitStickAtDistance": { l: "Tackle_HitStickAtDistance", d: "Allows hit stick attempts from a greater distance." },
+    "Tackle_PerfectTackleTimingFumbleChanceMod": { l: "Tackle_PerfectTackleTimingFumbleChanceMod", d: "Increases fumble probability on perfectly timed tackles." },
+    "Tackle_TimingWindowAdjustmentMod": { l: "Tackle_TimingWindowAdjustmentMod", d: "Widens the successful timing window for tackle attempts." },
+
+    // --- PRE-PLAY & GENERAL ---
+    "Preplay_BackfieldRouteMasterCount": { l: "Preplay_BackfieldRouteMasterCount", d: "Adds 4 unique hot routes for players in the backfield." },
+    "Preplay_QBRouteMasterCount": { l: "Preplay_QBRouteMasterCount", d: "Grants access to master hot routes for the entire offense." },
+    "Preplay_TERouteMasterCount": { l: "Preplay_TERouteMasterCount", d: "Adds 4 unique hot routes for Tight Ends." },
+    "Preplay_SlotRouteMasterCount": { l: "Preplay_SlotRouteMasterCount", d: "Adds 4 unique hot routes for Slot receivers." },
+    "Preplay_OutsideRouteMasterCount": { l: "Preplay_OutsideRouteMasterCount", d: "Adds 4 unique hot routes for Outside receivers." },
+    "Preplay_KickerNeverIced": { l: "Preplay_KickerNeverIced", d: "Removes 'Iced' camera and hidden meter effects on clutch kicks." },
+    "Preplay_ShowOffensePlayArt": { l: "Preplay_ShowOffensePlayArt", d: "Displays the opponent's primary play art to the defender." },
+    "Preplay_QbHotRoutesAllowedBeforeSet": { l: "Preplay_QbHotRoutesAllowedBeforeSet", d: "Allows hot routes to be made before the QB is set at the LOS." },
+    "Preplay_QbHotRoutesAllowedPerAnim": { l: "Preplay_QbHotRoutesAllowedPerAnim", d: "Increases adjustments allowed during a single pre-play animation." },
+    "General_ReduceTriggerRequirements": { l: "General_ReduceTriggerRequirements", d: "Lowers the requirements needed to enter 'The Zone'." },
+    "General_BuffKnockoutRequirements": { l: "General_BuffKnockoutRequirements", d: "Makes it easier to force knockouts while in the Zone." },
+    "Blocking_IgnoresPocketDegradationTimerPenalty": { l: "Blocking_IgnoresPocketDegradationTimerPenalty", d: "Ignores the pocket collapse timer for better pass protection." },
+    "GameModifierAbilities_PreventHotRoutesIncorrect": { l: "GameModifierAbilities_PreventHotRoutesIncorrect", d: "Prevents receivers from running wrong routes when hot-routed." },
+    "GameModifierAbilities_PreventHotRoutesFailed": { l: "GameModifierAbilities_PreventHotRoutesFailed", d: "Guarantees hot route adjustments are successful." },
+    "GameModifierAbilities_PreventAudibleFailure": { l: "GameModifierAbilities_PreventAudibleFailure", d: "Eliminates the risk of failed audibles." },
+    "Preplay_EnableCustomHotRoutes": { l: "Preplay_EnableCustomHotRoutes", d: "Unlocks custom hot route assignments during pre-play." },
+    "Preplay_KickMeterFixedSpeed_AccuracyTimer": { l: "Preplay_KickMeterFixedSpeed_AccuracyTimer", d: "Freezes the accuracy needle on the kick meter." },
+    "Preplay_KickMeterFixedSpeed_PowerTimer": { l: "Preplay_KickMeterFixedSpeed_PowerTimer", d: "Freezes the power needle on the kick meter." },
+    "Blocking_DoubleResistanceOnLossAgainstPassRush": { l: "Blocking_DoubleResistanceOnLossAgainstPassRush", d: "Grants double resistance bars after losing a pass-rush interaction." },
+    "Preplay_IdDefUser": { l: "Preplay_IdDefUser", d: "Highlights the player currently controlled by the human opponent." },
+    "Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin": { l: "Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin", d: "Blocker prevents super wins from unengaged defenders." },
+    "Blocking_ChanceIncreaseResistanceOnNonEngagedPassRushMoves": { l: "Blocking_ChanceIncreaseResistanceOnNonEngagedPassRushMoves", d: "Increases resistance against unengaged pass rushers." },
+    "Blocking_ChanceImpactOutcomeVersusDB_OffWin": { l: "Blocking_ChanceImpactOutcomeVersusDB_OffWin", d: "Guarantees a win during impact blocks against Defensive Backs." },
+
+    // --- AI & INTERNAL ---
+    "AIHint_Ability_BenchPress": { l: "AIHint_Ability_BenchPress", d: "Internal AI flag for Bench Press logic." },
+    "AIHint_Ability_DeepInElite": { l: "AIHint_Ability_DeepInElite", d: "Internal AI flag for Deep In Elite catching." },
+    "AIHint_Ability_DeepOutElite": { l: "AIHint_Ability_DeepOutElite", d: "Internal AI flag for Deep Out Elite catching." },
+    "AIHint_Ability_GrabNGo": { l: "AIHint_Ability_GrabNGo", d: "Internal AI flag for the Grab and Go post-catch transition." },
+    "GameModifierAbilities_IgnoreRatingsPenaltiesSpeed": { l: "GameModifierAbilities_IgnoreRatingsPenaltiesSpeed", d: "Negates speed penalties regardless of ratings." },
+    "GameModifierAbilities_IgnoreRatingsPenaltiesCOD": { l: "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", d: "Negates Change of Direction penalties." },
+    "GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration": { l: "GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration", d: "Negates acceleration penalties." }
+};
+        const abilities = [
+            { 
+                id: "3rd-down-threat", name: "3rd Down Threat", category: "reg", img: "3rdDownThreat.png", 
+                description: "On 3rd down, receivers with this ability have a better chance to win contested catches against single coverage up to 25 yards from the line of scrimmage.",
+                xLink: "https://www.mut.gg/abilities/3rd-down-threat/",
+                triggers: { 
+                    active: ["CurrentDown", "DownfieldThrowDistanceFromLOS", "HasMPCatchPositionalAdvantage"], 
+                    deactive: ["IsPass25+YardsPastLOS", "IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceBlockCatchTackleOutcome_Knockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceMpCatchWin"], "Output3": ["Catching_ChanceMidAirOutcome_Catch"] } 
+            },
+            { 
+                id: "Acrobat", name: "Acrobat", category: "reg", img: "Acrobat.png", 
+                description: "Players with this ability are more likely to succeed at and attempt diving catches and swats.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["CatchingDef_CanDiveCatch", "CatchingDef_ChanceToDiveSwat", "Catching_NoPenaltyForDiveCatch"]} 
+            },
+	    {
+                id: "Adrenaline-Rush", name: "Adrenaline Rush", category: "reg", img: "AdrenalineRush.png", 
+                description: "Pass rushers with this ability will have all of their pass rush move points restored after sacking the QB",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Defense_SackRestorePassRushPoints"]} 
+            },
+	    {
+                id: "Agile-Extender", name: "Agile Extender", category: "reg", img: "AgileExtender.png", 
+                description: "While in the pocket, passers with this ability are almost guaranteed to evade the first sack attempt by a blitzing defensive back.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInThePocket", "IsFirstSackAttempt"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Passing_AllowAgileBreakSackAnims", "Passing_ChanceBreakSackByDB"]} 
+            },
+	    {
+                id: "All-Day", name: "All Day", category: "reg", img: "AllDay.png", 
+                description: "Blockers with this ability will allow less frequent shed attempts by their block target",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Blocking_IgnoresPocketDegradationTimerPenalty"]} 
+            },
+	    {
+                id: "Anchored-Extender", name: "Anchored Extender", category: "reg", img: "AnchoredExtenter.png", 
+                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by a blitzing defensive back.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInThePocket", "IsFirstSackAttempt"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Passing_AllowPowerBreakSackAnims", "Passing_ChanceBreakSackByDB"]} 
+            },
+	    {
+                id: "Arm-Bar", name: "Arm Bar", category: "reg", img: "ArmBar.png", 
+                description: "Ballcarriers with this ability have more powerful stiff arm animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow"]} 
+            },
+	    {
+                id: "Bogo", name: "Bogo", category: "reg", img: "BOGO.png", 
+                description: "Defenders with this ability are granted a free pass rush move once per play after spending a pass rush point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Defense_FreePassRushMovesAfterFirst"]} 
+            },
+	    {
+                id: "Backfield-Master", name: "Backfield Master", category: "reg", img: "BackfieldMaster.png", 
+                description: "When lined up in the backfield, players with this ability have access to four additional hot routes, better route running, and improved catching against linebackers and linemen.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsLinedUpInBackfield"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ReceiverWinOnCutVsLowRatedNonDB", "Catching_ChanceSpCatch"], "Output2": ["Catching_ChanceMpCatchWinVsDL", "Catching_ChanceMpCatchWinVsLB"], "Output3": ["Preplay_BackfieldRouteMasterCount", "GameModifierAbilities_PreventHotRoutesIncorrect", "GameModifierAbilities_PreventHotRoutesFailed"]} 
+            },
+	    {
+                id: "Backfield-Mismatch", name: "Backfield Mismatch", category: "reg", img: "BackfieldMismatch.png", 
+                description: "Running backs with this ability have better catch in traffic and route running when coming out of the backfield against linebackers and linemen.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsLinedUpInBackfield"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ReceiverWinOnCutVsLowRatedNonDB", "Catching_ChanceSpCatch"], "Output2": ["Catching_ChanceMpCatchWinVsDL", "Catching_ChanceMpCatchWinVsLB"]} 
+            },
+	    {
+                id: "Backlash", name: "Backlash", category: "reg", img: "Backlash.png", 
+                description: "Ballcarriers with this ability will cause increased fatigue penalties against their tackler when tackled via a non-conservative tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Tackle_FatigueTacklerAfterTackle"]} 
+            },
+	    {
+                id: "Backyard HB", name: "Backyard HB", category: "reg", img: "backyardqb.png", 
+                description: "When lined up at running back, players with this ability have access to four additional hot routes during pre-play adjustments, and react more promptly to playmaker inputs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Preplay_BackfieldRouteMasterCount", "GameModifierAbilities_PreventHotRoutesIncorrect", "GameModifierAbilities_PreventHotRoutesFailed"], "ALWAYS2": ["Catching_ChanceCanUseFastDirect"]} 
+            },
+	    {
+                id: "Backyard QB", name: "Backyard QB", category: "reg", img: "backyardqb.png", 
+                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments and receive more immediate playmaker reactions from WRs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Preplay_QBRouteMasterCount", "GameModifierAbilities_PreventAudibleFailure"], "ALWAYS2": ["Passing_ChanceQBCanUseFastDirect"]} 
+            },
+	    {
+                id: "Backyard TE", name: "Backyard TE", category: "reg", img: "backyardqb.png", 
+                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments and receive more immediate playmaker reactions from WRs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Preplay_TERouteMasterCount", "GameModifierAbilities_PreventAudibleFailure", "GameModifierAbilities_PreventHotRoutesFailed"], "ALWAYS2": ["Catching_ChanceCanUseFastDirect"]} 
+            },
+	    {
+                id: "Backyard WR", name: "Backyard WR", category: "reg", img: "backyardqb.png", 
+                description: "When lined up as a receiver, players with this ability have access to four additional hot routes during pre-play adjustments, and react more promptly to playmaker inputs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Preplay_SlotRouteMasterCount", "Preplay_OutsideRouteMasterCount", "GameModifierAbilities_PreventAudibleFailure", "GameModifierAbilities_PreventHotRoutesFailed"], "ALWAYS2": ["Catching_ChanceCanUseFastDirect"]} 
+            },
+	    {
+                id: "Balance-Beam", name: "Balance Beam", category: "reg", img: "BalanceBeam.png", 
+                description: "Avoid stumbling when carrying the ball",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Running_NeverStumble"]} 
+            },
+	    {
+                id: "Bench-Press", name: "Bench Press", category: "reg", img: "BenchPress.png", 
+                description: "Defenders with this ability apply bonus fatigue to their man coverage target after a successful press win",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassingPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["AIHint_Ability_BenchPress", "CatchingDef_FatigueRecAfterPressWin"]} 
+            },
+	    {
+                id: "Bruiser", name: "Bruiser", category: "reg", img: "Bruiser.png", 
+                description: "Ballcarriers with this ability have more powerful truck and stiff arm animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow", "Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow"]} 
+            },
+	    {
+                id: "Bulldozer", name: "Bulldozer", category: "reg", img: "Bulldozer.png", 
+                description: "Ballcarriers with this ability have more powerful truck animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow"]} 
+            },
+	    {
+                id: "Chuck-Out", name: "Chuck Out", category: "reg", img: "ChuckOut.png", 
+                description: "Defenders with this ability apply bonus fatigue to their target after a successful zone chuck.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_FatigueRecAfterZoneChuckWin"]} 
+            },
+	    {
+                id: "Closer", name: "Closer", category: "reg", img: "Closer.png", 
+                description: "Locker room pep talks go a long way. Players with this ability can easily enter the Zone in the 2nd half.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThirdOrFourthQuarter"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_ReduceTriggerRequirements"]} 
+            },
+	    {
+                id: "Clutch", name: "Clutch", category: "reg", img: "Clutch.png", 
+                description: "Midway through the fourth quarter in close games, players with this ability can easily enter (and remain in) the Zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsCloseGame", "IsHalfwayThroughFourthQuarter"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_BuffKnockoutRequirements", "General_ReduceTriggerRequirements"]} 
+            },
+	    {
+                id: "Clutch-Kicker", name: "Clutch Kicker", category: "reg", img: "ClutchKicker.png", 
+                description: "Kickers with this ability are immune to the 'Ice the Kicker' effect that occurs after opponents call timeouts in critical situations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_KickerNeverIced"]} 
+            },
+	    {
+                id: "Comeback", name: "Comeback", category: "reg", img: "Comeback.png", 
+                description: "When playing from behind, players with this ability can easily enter the Zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsLosing"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_ReduceTriggerRequirements"]} 
+            },
+	    {
+                id: "Conducter", name: "Conducter", category: "reg", img: "conductor.png", 
+                description: "Passers with this ability can make all hot route and blocking adjustments twice as fast (excluding audibles).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure", "Preplay_QbHotRoutesAllowedBeforeSet", "Preplay_QbHotRoutesAllowedPerAnim"]} 
+            },
+	    {
+                id: "Crusher", name: "Crusher", category: "reg", img: "Crusher.png", 
+                description: "Defenders with this ability will cause heavy fatigue penalties when tackling a ballcarrier with a hit-stick tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ActiveTackleType", "RequestedTackleMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_FatigueTargetAfterTackle"]} 
+            },
+	    {
+                id: "Dashing-Deadeye", name: "Dashing Deadeye", category: "reg", img: "DashingDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all throws under 40 yards while running outside the pocket (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["DownFieldThrowDistanceFromQBUnder30", "IsThrowToSameSideAsBody", "OnTheRun"], 
+                    deactive: ["InThePocket", "IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure",  "PlayerVelocityDirection"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_IgnoreOnTheRunThrowPowerPenalties", "Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Deep-Elite", name: "Deep Elite", category: "reg", img: "deepelite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS", "IsPass19+YardsFromLOS"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_DeepInElite"], "Output5": ["AIHint_Ability_DeepOutElite"]} 
+            },
+	    {
+                id: "Deep-In-Elite", name: "Deep In Elite", category: "reg", img: "DeepInElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, inside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_DeepInElite"]} 
+            },
+	    {
+                id: "Deep-In-Zone-KO", name: "Deep In Zone KO", category: "reg", img: "DeepInZoneKO.png", 
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and inside the numbers.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
+            },
+	    {
+                id: "Deep-Out-Elite", name: "Deep Out Elite", category: "reg", img: "DeepOutElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, outside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsPass19+YardsFromLOS"], 
+                    deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_DeepOutElite"]} 
+            },
+	    {
+                id: "Deep-Out-Zone-KO", name: "Deep Out Zone KO", category: "reg", img: "DeepOutZoneKO.png", 
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and outside the hash marks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "IsThrowTargetOutsideHashmarks"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
+            },
+	    {
+                id: "Deep-Route-KO", name: "Deep Route KO", category: "reg", img: "DeepRouteKO.png", 
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus deep routes 20+ yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInManDefense", "IsPass19+YardsFromLOS"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout"]} 
+            },
+	    {
+                id: "Deep-Zone-KO", name: "Deep Zone KO", category: "reg", img: "deepzoneko.png", 
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "DownfieldThrowDistanceFromLOS"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
+            },
+	    {
+                id: "Defensive-Rally", name: "Defensive Rally", category: "reg", img: "DefensiveRally.png", 
+                description: "Defenders with this ability will grant a bonus pass rush point to all defensive linemen on any 3rd or 4th down",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Defense_DLinePointsOnStops"]} 
+            },
+	    {
+                id: "Deflator", name: "Deflator", category: "reg", img: "Deflator.png", 
+                description: "Defenders with this ability will cause increased fatigue penalties when tackling a ballcarrier with a non-conservative tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Tackle_FatigueTargetAfterTackle"]} 
+            },
+	    {
+                id: "Demoralizer", name: "Demoralizer", category: "reg", img: "Demoralizer.png", 
+                description: "Defenders with this ability will clear a ballcarrier's progress towards entering the zone with a hit-stick tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ActiveTackleType", "RequestedTackleMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Tackle_ResetZoneProgressOnTargetAfterTackle"]} 
+            },
+	    {
+                id: "Double-Or-Nothing", name: "Double Or Nothing", category: "reg", img: "DoubleOrNothing.png", 
+                description: "Pass rushers with this ability must spend double the pass rush points to perform a move but are granted dominant wins",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_DefMoveCostsDouble"]} 
+            },
+	    {
+                id: "Edge-Protector", name: "Edge Protector", category: "reg", img: "edgeprotector.png", 
+                description: "Blockers with this ability reduce an edge pass rusher's chances of using a quick block shed move",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin", "Blocking_ChanceIncreaseResistanceOnNonEngagedPassRushMoves"]} 
+            },
+	    {
+                id: "Edge-Threat", name: "Edge Threat", category: "reg", img: "EdgeThreat.png", 
+                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the edge of the defense.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["SnapPosition"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["BlockingDef_ChanceNonEngDefMoveOutcome_DefWin"]} 
+            },
+	    {
+                id: "Edge-Threat-Elite", name: "Edge Threat Elite", category: "reg", img: "EdgeThreatElite.png", 
+                description: "Defenders with this ability use faster, more dominant pass rush moves and apply significant QB pressure while rushing from the edge of the defense.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["SnapPosition"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "OUTPUT1": ["BlockingDef_ChanceNonEngDefMoveOutcome_DefWin"], "OUTPUT2": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
+            },
+	    {
+                id: "El-Toro", name: "El Toro", category: "reg", img: "ElToro.png", 
+                description: "Defenders with this ability will receive dominant bull rush wins when their pass rush points are full. This consumes an additional point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [""], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["BlockingDef_BullRushMaxPointsSuperWinCostsDouble", "BlockingDef_ChanceBullRushMaxPointsSuperWin"]} 
+            },
+	    {
+                id: "Energizer", name: "Energizer", category: "reg", img: "Energizer.png", 
+                description: "Ballcarriers with this ability will replenish a portion of their stamina upon successfully performing any skill move",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Running_ReplenishStaminaAfterSuccessSkillMove"]} 
+            },
+	    {
+                id: "Enforcer", name: "Enforcer", category: "reg", img: "Enforcer.png", 
+                description: "Defenders with this ability don't allow broken tackles when hit-sticking ballcarriers - regardless of the runner's size or power.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Tackle_CanHitStickAnyone", "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick", "Tackle_HitStickAtDistance"]} 
+            },
+	    {
+                id: "Enforcer-Supreme", name: "Enforcer Supreme", category: "reg", img: "enforcersupreme.png", 
+                description: "Defenders with this ability don't allow broken tackles, cause heavy fatigue penalties, and will clear a ballcarrier's progress towards entering the zone when landing a hit-stick.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ActiveTackleType", "RequestedTackleMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_CanHitStickAnyone", "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick", "Tackle_HitStickAtDistance"], "Output2": ["Tackle_ResetZoneProgressOnTargetAfterTackle"], "Output3": ["Tackle_FatigueTargetAfterTackle"]} 
+            },
+	    {
+                id: "Evasive", name: "Evasive", category: "reg", img: "Evasive.png", 
+                description: "Ballcarriers with this ability have steerable juke and spin animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Running_EliteJukeAnims", "Running_EliteSpinAnims"]} 
+            },
+	    {
+                id: "Extra-Credit", name: "Extra Credit", category: "reg", img: "ExtraCredit.png", 
+                description: "Pass rushers with this ability are granted an additional maximum pass rush move point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Defense_MaxPassRushPoints"]} 
+            },
+	    {
+                id: "Extra-Pop", name: "Extra Pop", category: "reg", img: "ExtraPop.png", 
+                description: "Defenders with this ability have a greater chance of forcing fumbles when landing Perfect Hit Sticks",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "ALWAYS": ["Tackle_PerfectTackleTimingFumbleChanceMod"]} 
+            },
+	    {
+                id: "Fastbreak", name: "Fastbreak", category: "reg", img: "FastBreak.png", 
+                description: "Passers with this ability receive better blocking support on designed quarterback run plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["IsDesignedRun"] 
+                }, 
+                outputGroups: { "Output1": ["Running_PushThePile_AutoWins", "Running_BlockShedInitialTimerPenalty"], "Output2": ["GameModifierAbilities_IgnoreRatingsPenaltiesSpeed", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration"]} 
+            },
+	    {
+                id: "Fearless", name: "Fearless", category: "reg", img: "fearless.png", 
+                description: "Passers with this ability are immune to throw penalties caused by defensive pressure while their feet are set in the pocket",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["OnTheRun"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ChanceImmuneToPressure"]} 
+            },
+	    {
+                id: "Film-Study", name: "Film Study", category: "reg", img: "filmstudy.png", 
+                description: "Shows offensive play art after 5 repeats of the same play in a quarter.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RanPlay5+ThisQ"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_ShowOffensePlayArt"]} 
+            },
+	    {
+                id: "Flat-Zone-KO", name: "Flat Zone KO", category: "reg", img: "FlatZoneKO.png", 
+                description: "Defenders with this ability force more catch knockouts and react quicker in any flat zone coverage, less than 10 yards from the LoS and outside the hash marks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInZoneDefense", "IsThrowTargetOutsideHashmarks"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
+            },
+	    {
+                id: "Focused-Kicker", name: "Focused Kicker", category: "reg", img: "FocusedKicker.png", 
+                description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks up to 45 yards.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsKick45YardsOrLess"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_KickMeterFixedSpeed_AccuracyTimer", "Preplay_KickMeterFixedSpeed_PowerTimer"]} 
+            },
+	    {
+                id: "Fool-Me-Once", name: "Fool Me Once", category: "reg", img: "FoolMeOnce.png", 
+                description: "Blockers with this ability gain blocker resistance points as a faster rate",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_DoubleResistanceOnLossAgainstPassRush"]} 
+            },
+	    {
+                id: "Form-Tackler", name: "Form Tackler", category: "reg", img: "FormTackler.png", 
+                description: "Defenders with this ability have a larger timing window for landing Perfect Hit Sticks",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_TimingWindowAdjustmentMod"]} 
+            },
+	    {
+                id: "Gift-Wrapped", name: "Gift Wrapped", category: "reg", img: "GiftWrapped.png", 
+                description: "Passers with this ability have a better chance to complete passes to uncovered receivers.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_GiftCatchChanceForSp_RB", "Passing_GiftCatchChanceForSp_TE", "Passing_GiftCatchChanceForSp_WR"]} 
+            },
+	    {
+                id: "Goal-Line-Back", name: "Goal Line Back", category: "reg", img: "goallineback.png", 
+                description: "Running Backs with this ability receive improved blocking from their O-Line within 5 yards of the end zone",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsRunPlay", "IsWithinGoalLine"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_BlockShedInitialTimerPenalty"]} 
+            },
+	    {
+                id: "Goal-Line-Stuff", name: "Goal Line Stuff", category: "reg", img: "GoalLineStuff.png", 
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks within 5 yards of the goal line.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsOnGoalline"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceStandardOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction"]} 
+            },
+	    {
+                id: "Grab-N-Go", name: "Grab N Go", category: "reg", img: "GrabNGo.png", 
+                description: "After securing a RAC catch, ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsRACCatch"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_DisableCatchMechanicPenalty", "Catching_ChanceSpCatch", "Catching_ChanceQbThrow_PerfectLead", "Running_EnableSwerveLoco"], "Output2": ["AIHint_Ability_GrabNGo"], "Output3": ["GameModifierAbilities_IgnoreRatingsPenaltiesSpeed", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration"],} 
+            },
+	    {
+                id: "Gunslinger", name: "Gunslinger", category: "reg", img: "Gunslinger.png", 
+                description: "QB has increased pass anim speed and a larger threshold before using the long hail mary windup animation",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ExtraDistanceBeforeHailMaryPassAnim", "Passing_PassSpeedMod"]} 
+            },
+	    {
+                id: "Gutsy-Scrambler", name: "Gutsy Scrambler", category: "reg", img: "GutsyScrambler.png", 
+                description: "Passers with this ability are immune to throw penalties caused by defensive pressure while on the run",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["OnTheRun"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ChanceImmuneToPressure"]} 
+            },
+	    {
+                id: "High-Point-Deadeye", name: "High Point Deadeye", category: "reg", img: "highpointdeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on any high point throws under 20 yards.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassTargetWithin20YardsOfQB"], 
+                    deactive: ["IsQBUnderPressure"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Homer", name: "Homer", category: "reg", img: "Homer.png", 
+                description: "When playing at home, players with this ability can easily enter the Zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["OnHomeTeam"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_ReduceTriggerRequirements"]} 
+            },
+	    {
+                id: "Honorary-Lineman", name: "Honorary Lineman", category: "reg", img: "HonoraryLineman.png", 
+                description: "Players with this ability will frequently win impact blocks against defensive backs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceImpactOutcomeVersusDB_OffWin"]} 
+            },
+	    {
+                id: "Hot-Route-Master", name: "Honorary Lineman", category: "reg", img: "HotRouteMaster.png", 
+                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure", "Preplay_QBRouteMasterCount"]} 
+            },
+	    {
+                id: "Human-Joystick", name: "Human Joystick", category: "reg", img: "HumanJoyStick.png", 
+                description: "Ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesSpeed","Running_EnableSwerveLoco"]} 
+            },
+	    {
+                id: "Identifier", name: "Identifier", category: "reg", img: "identifier.png", 
+                description: "Players with this ability can detect user-controlled defenders before the snap.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_IdDefUser"]} 
+            },
+	    {
+                id: "Indoor-Baller", name: "Indoor Baller", category: "reg", img: "IndoorBaller.png", 
+                description: "When playing in an indoor stadium, players with this ability can easily enter the Zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsDomeGame"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_ReduceTriggerRequirements"]} 
+            },
+	    {
+                id: "Inside-Deadeye", name: "Inside Deadeye", category: "reg", img: "InsideDeadeye.png", 
+                description: "When playing in an indoor stadium, players with this ability can easily enter the Zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThrowTargetInsideNumbers", "IsThrowToSameSideAsBody"], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun", "PlayerVelocityDirection"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Inside-Shade", name: "Inside Shade", category: "reg", img: "insideshade.png", 
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and inside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsBetweenTheNumbers", "IsInManDefense"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceCounterOutcome_DefWin", "CatchingDef_ChanceDefenderWinOnCut"]} 
+            },
+	    {
+                id: "Inside-Stuff", name: "Inside Stuff", category: "reg", img: "InsideStuff.png", 
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against inside run plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInsideRun"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceCounterOutcome_DefWin", "BlockingDef_InitialTimerReduction"]} 
+            },
+	    {
+                id: "Instant-Rebate", name: "Instant Rebate", category: "reg", img: "instantrebate.png", 
+                description: "Defenders with this ability are refunded a pass rush point when they successfully shed blocks",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceSheddingBlockRestoresPassRushPoint"]} 
+            },
+	    {
+                id: "Interior-Threat", name: "Interior Threat", category: "reg", img: "interiorthreat.png", 
+                description: "Defenders with this ability are refunded a pass rush point when they successfully shed blocks",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["SnapPosition"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceNonEngDefMoveOutcome_DefWin"]} 
+            },
+	    {
+                id: "Ironman", name: "Ironman", category: "reg", img: "ironman.png", 
+                description: "Players with this ability avoid any ratings penalties associated with playing outside of their primary position",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_IgnoreOutOfPositionRatingPenalty"]} 
+            },
+	    {
+                id: "Juke-Box", name: "Juke Box", category: "reg", img: "JukeBox.png", 
+                description: "Ballcarriers with this ability have steerable juke animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_EliteJukeAnims"]} 
+            },
+	    {
+                id: "Leap-Frog", name: "Leap Frog", category: "reg", img: "LeapFrog.png", 
+                description: "Ballcarriers with this ability will hold onto the ball if tackled during a hurdle",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChancePreventFumblesDuringHurdle", "Running_EliteHurdleAnims"]} 
+            },
+	    {
+                id: "Lifeguard", name: "Lifeguard", category: "reg", img: "Lifeguard.png", 
+                description: "Blockers with this ability defend against swim/club pass rush moves as if they had an additional resistance point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceIncreasedResistanceOnClubMoves", "Blocking_ChanceIncreasedResistanceOnSwimMoves"]} 
+            },
+	    {
+                id: "Linchpin", name: "Linchpin", category: "reg", img: "linchpin.png", 
+                description: "Players with this ability grant improved blocking to the entire offensive line.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_BlockShedInitialTimerPenalty"]} 
+            },
+	    {
+                id: "Lofting-Deadeye", name: "Lofting Deadeye", category: "reg", img: "LoftingDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all lob or touch passes (except high/low and cross-body throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassWithLobSpeed", "IsPassWithTouchSpeed", "IsThrowToSameSideAsBody"], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun", "PlayerVelocityDirection"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Long-Range-Deadeye", name: "Long Range Deadeye", category: "reg", img: "LongRangeDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all deep throws while their feet are set (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPass40+Yards"], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Lumberjack", name: "Lumberjack", category: "reg", img: "Lumberjack.png", 
+                description: "Defenders with this ability do not allow broken tackles and cause more fumbles when cut-sticking ballcarriers.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_AllowCutStickFumbles", "Tackle_Chance2ManTackleOutcome_NotBroken_OnCutStick"]} 
+            },
+	    {
+                id: "Lurk-Artist", name: "Lurk Artist", category: "reg", img: "lurkartist.png", 
+                description: "Defenders with this ability can make jumping, 180-degree INTs while lurking in a zone in the middle of the field, have a greater INT rate, and don't tire after INTs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceToHighJump"],  "Output2": ["CatchingDef_UnlimitedStaminaOnINT", "CatchingDef_ChanceSpCatch", "CatchingDef_Def_ChanceDisablePhysicsForceKnockout"]} 
+            },
+	    {
+                id: "Lurker", name: "Lurker", category: "reg", img: "lurker.png", 
+                description: "Defenders with this ability can make jumping, 180-degree interceptions while lurking in a zone in the middle of the field.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceToHighJump"]} 
+            },
+	    {
+                id: "Master-Tactician", name: "Master Tactician", category: "reg", img: "mastertactician.png", 
+                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments, make hot routes faster, and receive more immediate playmaker reactions from WRs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_QBRouteMasterCount", "GameModifierAbilities_PreventAudibleFailure"],  "Output2": ["Passing_ChanceQBCanUseFastDirect"],  "Output3": ["Preplay_QbHotRoutesAllowedBeforeSet", "Preplay_QbHotRoutesAllowedPerAnim", "GameModifierAbilities_PreventAudibleFailure"]} 
+            },
+	    {
+                id: "Matador", name: "Matador", category: "reg", img: "Matador.png", 
+                description: "Blockers with this ability have stronger protection against dominant bull rush moves attempted by defenders",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceBlockBullRushSuperWin"]} 
+            },
+	    {
+                id: "Matchup-Nightmare", name: "Matchup Nightmare", category: "reg", img: "MatchupNightmare.png", 
+                description: "Receivers with this ability make sharper cuts and frequently win contested catches when covered by linebackers and linemen.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ReceiverWinOnCutVsLowRatedNonDB", "Catching_ChanceSpCatch"],  "Output2": ["Catching_ChanceMpCatchWinVsLB", "Catching_ChanceMpCatchWinVsDL"],} 
+            },
+	    {
+                id: "Medium-Route-KO", name: "Medium Route KO", category: "reg", img: "MediumRouteKO.png", 
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInManDefense", "IsPassBetween9And21YardsFromLOS"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout"]} 
+            },
+	    {
+                id: "Menace", name: "Menace", category: "reg", img: "menace.png", 
+                description: "Defenders with this ability play more powerful catch tackles that force more knockouts and cause increased fatigue penalties on Perfect catch tackles",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChancePerfectCatchTackleOutcome_Knockout", "Tackle_FatigueTargetAfterPerfectCatchTackle", "Tackle_ElitePerfectCatchTackleAnims"]} 
+            },
+	    {
+                id: "Mid-Elite", name: "Mid Elite", category: "reg", img: "midelite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS", "IsPassBetween9And21YardsFromLOS"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidOutElite"]} 
+            },
+	    {
+                id: "Mid-In-Elite", name: "Mid In Elite", category: "reg", img: "MidInElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, inside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidInElite"]} 
+            },
+	    {
+                id: "Mid-Out-Elite", name: "Mid Out Elite", category: "reg", img: "MidOutElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, outside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage"], 
+                    deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidtOutElite"]} 
+            },
+	    {
+                id: "Mid-Zone-KO", name: "Mid Zone KO", category: "reg", img: "MidZoneKO.png", 
+                description: "Defenders with this ability force more catch knockouts and react quicker in any mid-field zone coverage, less than 20 yards from the LoS inside the numbers and 10-20 outside.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInZoneDefense", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
+            },
+	    {
+                id: "Mr-Big-Stop", name: "Mr. Big Stop", category: "reg", img: "MrBigStop.png", 
+                description: "Defenders with this ability will start and 3rd or 4th down with at least half of their maximum pass rush points",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThirdOrFourthDown"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_HalfFillMeterOnDowns"]} 
+            },
+	    {
+                id: "Nasty-Streak", name: "Nasty Streak", category: "reg", img: "NastyStreak.png", 
+                description: "Blockers with this ability will frequently attempt and win impact blocks against linebackers and defensive backs when playing as a lineman or fullback.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["SnapPosition"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_AlwaysAttemptsImpactBlocksVersusDB", "Blocking_ChanceImpactOutcomeVersusDB_OffSuperWin", "Blocking_ChanceImpactOutcomeVersusDB_OffWin", "Blocking_ChanceImpactOutcomeVersusLB_OffWin"]} 
+            },
+	    {
+                id: "Natural-Talent", name: "Natural Talent", category: "reg", img: "naturaltalent.png", 
+                description: "Blockers with this ability start every new blocking encounter with built-in resistance",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_IncreaseDefaultResistancePoints"]} 
+            },
+	    {
+                id: "No-Outsiders", name: "No Outsiders", category: "reg", img: "NoOutsiders.png", 
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against outside zone plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsOutsideRun"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceStandardOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction"]} 
+            },
+	    {
+                id: "No-Look-Deadeye", name: "No-Look Deadeye", category: "reg", img: "NolookDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all cross-body throws up to 20 yards (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassTargetWithin20YardsOfQB"], 
+                    deactive: ["IsPassWithLowMech", "IsQBUnderPressure", "IsThrowToSameSideAsBody"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_IgnoreOnTheRunThrowPowerPenalties", "Passing_PerfectAccuracy"],  "Output2": ["Passing_PassStyle_UseSideArm", "Passing_PassStyle_UseNoLookPasses"]} 
+            },
+	    {
+                id: "Omniscient", name: "Omniscient", category: "reg", img: "omniscient.png", 
+                description: "Players with this ability can detect user-controlled defenders before the snap, as well as 3rd and 4th down blitzers. Can be bluffed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["CurrentDown"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_IdDefUser"],  "Output2": ["Preplay_HighlightBlitzersPreSnap"]} 
+            },
+	    {
+                id: "On-The-Ball", name: "On The Ball", category: "reg", img: "OnTheBall.png", 
+                description: "Players with this ability are much less likely to be fooled by WR runoffs",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ForceMinTimerToBreakCoverageAgainstWR"]} 
+            },
+	    {
+                id: "One-Step-Ahead", name: "One Step Ahead", category: "reg", img: "OneStepAhead.png", 
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInManDefense"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceCounterOutcome_DefWin", "CatchingDef_ChanceDefenderWinOnCut"]} 
+            },
+	    {
+                id: "Out-My-Way", name: "Out My Way", category: "reg", img: "OutMyWay.png", 
+                description: "Defenders with this ability will frequently attempt and win impact blocks against receivers, tight ends, and running backs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceImpactOutcomeVersusRB_DefSuperWin", "BlockingDef_ChanceImpactOutcomeVersusTE_DefWin", "BlockingDef_ChanceImpactOutcomeVersusWR_DefSuperWin"]} 
+            },
+	    {
+                id: "Outmatched", name: "Outmatched", category: "reg", img: "Outmatched.png", 
+                description: "Defenders with this ability are highly likely to force catch knockouts against running backs",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceMPCatchWin_AgainstHB"],  "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout",
+"CatchingDef_ChanceMidAirOutcome_Knockout",
+"CatchingDef_ChanceMpCatchOutcome_DropKnockout"]} 
+            },
+	    {
+                id: "Outside-Apprentice", name: "Outside Apprentice", category: "reg", img: "OutsideApprentice.png", 
+                description: "When lined up at wide receiver (excluding slot), players with this ability have access to four additional hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_OutsideRouteMasterCount"]} 
+            },
+	    {
+                id: "Outside-Shade", name: "Outside Shade", category: "reg", img: "outsideshade.png", 
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and outside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInManDefense"], 
+                    deactive: ["IsBetweenTheNumbers"] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceCounterOutcome_DefWin", "CatchingDef_ChanceDefenderWinOnCut"]} 
+            },
+	    {
+                id: "Pass-Commited", name: "Pass Commited", category: "reg", img: "setfeetlead.png", 
+                description: "Defenders with this ability will win pass blocks when they correctly use the Guess Play adjustment to predict a pass. Incorrect guesses will result in a loss.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["CorrectGuessOnCommit"], 
+                    deactive: ["IncorrectGuessOnCommit"] 
+                }, 
+                outputGroups: { "Incorrect Guess": ["BlockingDef_ForceCutOutcome_OffWin", "BlockingDef_ChanceCutOutcome_OffWin"], "Correct Guess": ["BlockingDef_ChanceCutOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Pass-Lead-Elite", name: "Pass Lead Elite", category: "reg", img: "PassLeadElite.png", 
+                description: "Passers with this ability have increased throw power on bullet precision passes (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsBulletPass", "IsQBLeadingPass"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PassStrengthMod"], "Output2": ["AIHint_Ability_PassLeadElite"]} 
+            },
+	    {
+                id: "Pass-Protector", name: "Pass Protector", category: "reg", img: "PassProtector.png", 
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while pass blocking.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceBlockDefMoveOutcome_DefSuperWin", "Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin", "Blocking_ChanceBlockStandardOutcome_DefSuperWin", "Blocking_ChanceBlockUpgradeDefWinToSuper_DefensiveMove", "Blocking_SecurePassBlockerInitialTimer"]} 
+            },
+	    {
+                id: "Persistent", name: "Persistent", category: "reg", img: "persistent.png", 
+                description: "Players with this ability are harder to knock out of The Zone",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_DebuffKnockoutRequirements"]} 
+            },
+	    {
+                id: "Pick Artist", name: "Pick Artist", category: "reg", img: "PickArtist.png", 
+                description: "Defenders with this ability have higher chance to catch uncontested interceptions, and they have unlimited stamina on the return (until using a special move or breaking a tackle).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceSpCatch", "CatchingDef_Def_ChanceDisablePhysicsForceKnockout", "CatchingDef_UnlimitedStaminaOnINT"]} 
+            },
+	    {
+                id: "Playmaker", name: "Playmaker", category: "reg", img: "playmaker.png", 
+                description: "Receivers with this ability will immediately and precisely react to a user's playmaker inputs.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceCanUseFastDirect"]} 
+            },
+	    {
+                id: "Pocket-Deadeye", name: "Pocket Deadeye", category: "reg", img: "PocketDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all unpressured throws while their feet are set in the pocket (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Post-Up", name: "Post Up", category: "reg", img: "PostUp.png", 
+                description: "Blockers with this ability are almost guaranteed to win any double team block they are engaged in",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["EngagedInBlock"] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceDefPassDblTeamOutcome_OffWin", "Blocking_ChanceRunDblTeamOutcome_OffWin"]} 
+            },
+	    {
+                id: "Precision-Kicker", name: "Precision Kicker", category: "reg", img: "PrecisionKicker.png", 
+                description: "Kickers with this ability can see the entirety of the kicking arc",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_KickArcDisplayedIndefinitely"]} 
+            },
+	    {
+                id: "Protected", name: "Protected", category: "reg", img: "Protected.png", 
+                description: "Passers with this ability receive better pass blocking from their offensive linemen.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassingPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PocketDegradationTimerPenalty", "Preplay_PassBlockTargetingHelperLogic"]} 
+            },
+	    {
+                id: "Puller-Elite", name: "Puller Elite", category: "reg", img: "PullerElite.png", 
+                description: "Blockers with this ability will frequently attempt and win pull blocks",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Blocking_AlwaysImpactBlock", "Blocking_ChanceImpactOutcomeVersusDB_OffWin", "Blocking_ChanceImpactOutcomeVersusLB_OffWin"]} 
+            },
+	    {
+                id: "QB-Playmaker", name: "QB Playmaker", category: "reg", img: "playmaker.png", 
+                description: "Passers with this ability can elicit immediate and precise playmaker reactions from any receiver.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Passing_ChanceQBCanUseFastDirect"]} 
+            },
+	    {
+                id: "Quick-Draw", name: "Quick Draw", category: "reg", img: "QuickDraw.png", 
+                description: "Passers with this ability have faster passing animations when they are throwing under pressure",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsQBUnderPressure"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Passing_ExtraDistanceBeforeHailMaryPassAnim", "Passing_PassSpeedMod", "Passing_PassStrengthMod"]} 
+            },
+	    {
+                id: "RB-Apprentice", name: "RB Apprentice", category: "reg", img: "RBApprentice.png", 
+                description: "When lined up at running back, players with this ability have access to four additional hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_BackfieldRouteMasterCount"]} 
+            },
+	    {
+                id: "Reach-Elite", name: "Reach Elite", category: "reg", img: "ReachElite.png", 
+                description: "Defenders with this ability can reach out of engaged blocks to tackle or sack nearby ballcarriers.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["BlockingDef_ChanceToReachSack", "BlockingDef_ChanceToReachTackle"]} 
+            },
+	    {
+                id: "Reach-For-It", name: "Reach For It", category: "reg", img: "ReachForIt.png", 
+                description: "Ballcarriers with this ability will frequently attempt to gain extra yards while being tackled",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Tackle_ChanceLocatorBasedTackleOffenseWin"]} 
+            },
+	    {
+                id: "Recuperation", name: "Recuperation", category: "reg", img: "Recuperation.png", 
+                description: "Players with this ability will recover from the effects of fatigue at an increased rate between plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["General_DecreasedFatigueDegradationRate", "General_IncreasedFatigueRecoveryRate"]} 
+            },
+	    {
+                id: "Red-Zone-Deadeye", name: "Red Zone Deadeye", category: "reg", img: "RedZoneDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all unpressured throws inside the red zone (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThrowToSameSideAsBody"], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun", "PlayerVelocityDirection"] 
+                }, 
+                outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Red-Zone-Threat", name: "Red Zone Threat", category: "reg", img: "RedZoneThreat.png", 
+                description: "When in the red zone, receivers with this ability have a better chance to win contested catches against single coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HasMPCatchPositionalAdvantage", "IsInRedZone"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Return-Man", name: "Return Man", category: "reg", img: "returnman.png", 
+                description: "Ballcarriers with this ability have an increased chance to break the first tackle attempt on kick returns",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: ["NumBrokenTacklesThisPlay"] 
+                }, 
+                outputGroups: { "Always": ["Catching_ChanceSpCatch", "Running_Chance2ManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnCutStick", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken_OnStrip"]} 
+            },
+	    {
+                id: "Ripper", name: "Ripper", category: "reg", img: "Ripper.png", 
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting rip pass rush moves",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Defense_ChanceNoResistanceOnRip"]} 
+            },
+	    {
+                id: "Roaming-Deadeye", name: "Roaming Deadeye", category: "reg", img: "RoamingDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all unpressured throws while their feet are set outside the pocket (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["OnTheRun"], 
+                    deactive: ["InThePocket", "IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure"] 
+                }, 
+                outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Route-Apprentice", name: "Route Apprentice", category: "reg", img: "RouteApprentice.png", 
+                description: "Players with this ability have access to four additional hot routes, regardless of where they line up.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_BackfieldRouteMasterCount", "Preplay_OutsideRouteMasterCount", "Preplay_SlotRouteMasterCount", "Preplay_TERouteMasterCount"]} 
+            },
+	    {
+                id: "Route-Technician", name: "Route Technician", category: "reg", img: "RouteTechnician.png", 
+                description: "Receivers with this ability have a high success rate when creating separation on the last cut of any route.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["CurrentCutMoveInRoute"], 
+                    deactive: ["TotalCutMovesInRoute"] 
+                }, 
+                outputGroups: { "Always": ["Catching_ChanceCounterOutcome_OffWin", "Catching_ChanceReceiverWinOnCut"]} 
+            },
+	    {
+                id: "Run-Committed", name: "Run Committed", category: "reg", img: "RunCommitted.png", 
+                description: "Defenders with this ability will dominantly win run blocks when they correctly use the Guess Play adjustment to predict a run. Incorrect guesses will result in a loss.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["CorrectGuessOnCommit"], 
+                    deactive: ["IncorrectGuessOnCommit"] 
+                }, 
+                outputGroups: { "Incorrect Guess": ["BlockingDef_ChanceCutOutcome_OffWin", "BlockingDef_ChanceDefMoveOutcome_OffWin", "BlockingDef_ChanceNonEngDefMoveOutcome_OffWin"], "Correct Guess": ["BlockingDef_ChanceCutOutcome_DefSuperWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Run-Protector", name: "Run Protector", category: "reg", img: "runprotector.png", 
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while run blocking.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsRunPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceBlockDefMoveOutcome_DefSuperWin", "Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin", "Blocking_ChanceBlockStandardOutcome_DefSuperWin", "Blocking_ChanceBlockUpgradeDefWinToSuper_DefensiveMove", "Blocking_SecurePassBlockerInitialTimer"]} 
+            },
+	    {
+                id: "Run-Stopper", name: "Run Stopper", category: "reg", img: "RunStopper.png", 
+                description: "Defenders with this ability do not need to spend a point on shed attempts during a run play",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsRunPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Defense_ChanceRushMovesFree"]} 
+            },
+	    {
+                id: "Runoff-Elite", name: "Runoff Elite", category: "reg", img: "RunOffElite.png", 
+                description: "Players with this ability will distract defenders for longer with their runoffs",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Blocking_ForceMaxTimerToBreakAgainstWR"]} 
+            },
+	    {
+                id: "Safety-Valve", name: "Safety Valve", category: "reg", img: "SafetyValve.png", 
+                description: "Passers with this ability improve the catching prowess of all running backs who are open on pass plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Passing_GiftCatchChanceForSp_RB"]} 
+            },
+	    {
+                id: "Screen-Protector", name: "Screen Protector", category: "reg", img: "ScreenProtector.png", 
+                description: "Blockers with this ability will dominantly win impact blocks on screen plays",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsScreenPass"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Blocking_ChanceUpgradeOffWinToSuper_ImpactMove"]} 
+            },
+	    {
+                id: "Second-Wind", name: "Second Wind", category: "reg", img: "SecondWind.png", 
+                description: "Players with this ability have a chance to replenish their stamina, once per play, when it is half depleted",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["General_ReplenishStaminaChance", "General_ReplenishStaminaTriggerRequirements"]} 
+            },
+	    {
+                id: "Secure-Protector", name: "Secure Protector", category: "reg", img: "SecureProtector.png", 
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Always": ["Blocking_ChanceBlockDefMoveOutcome_DefSuperWin",
+"Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin",
+"Blocking_ChanceBlockStandardOutcome_DefSuperWin",
+"Blocking_ChanceBlockUpgradeDefWinToSuper_DefensiveMove", "Blocking_SecurePassBlockerInitialTimer"]} 
+            },
+	    {
+                id: "Secure-Tackler", name: "Secure Tackler", category: "reg", img: "SecureTackler.png", 
+                description: "Defenders with this ability have an increased success rate when using conservative or diving tackles.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ActiveTackleType", "RequestedTackleMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_Chance2ManTackleOutcome_NotBroken",
+"Tackle_ChanceNManTackleOutcome_NotBroken",
+"Tackle_TackleAtDistance"],  "Output2": ["AIHint_Ability_SecureTackle"]} 
+            },
+	    {
+                id: "Set-Feet-Lead", name: "Set Feet Lead", category: "reg", img: "setfeetlead.png", 
+                description: "Passers with this ability have increased throw power on bullet precision passes made while their feet are set (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsPassWithBulletSpeed", "IsQBLeadingPass"], 
+                    deactive: ["OnTheRun"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PassStrengthMod"]} 
+            },
+	    {
+                id: "Short-Elite", name: "Short Elite", category: "reg", img: "shortelite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS"], 
+                    deactive: ["IsPass11+YardsPastLOS", "IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortInElite"], "Output5": ["AIHint_Ability_ShortOutElite"]} 
+            },
+	    {
+                id: "Short-In-Elite", name: "Short In Elite", category: "reg", img: "ShortInElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, inside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsThrowTargetInsideNumbers"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortInElite"]} 
+            },
+	    {
+                id: "Short-Out-Elite", name: "Short Out Elite", category: "reg", img: "ShortOutElite.png", 
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, outside the numbers",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage"], 
+                    deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortOutElite"]} 
+            },
+	    {
+                id: "Short-Route-KO", name: "Short Route KO", category: "reg", img: "ShortRouteKO.png", 
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsInManDefense"], 
+                    deactive: ["IsPass11+YardsPastLOS"] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout"]} 
+            },
+	    {
+                id: "Sideline-Deadeye", name: "Sideline Deadeye", category: "reg", img: "SideLineDeadeye.png", 
+                description: "Passers with this ability have perfect accuracy on all throws outside the numbers (except on high/low throws).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThrowToSameSideAsBody"], 
+                    deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "IsThrowTargetInsideNumbers", "OnTheRun", "PlayerVelocityDirection"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "Sleight-of-Hand", name: "Sleight of Hand", category: "reg", img: "SleightOfHand.png", 
+                description: "Passers with this ability have an increased success rate when using pump fakes on double-move routes against zone coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PumpFake_FakeoutChance", "Passing_PumpFake_FakeoutJumpChance"]} 
+            },
+	    {
+                id: "Slot-Apprentice", name: "Slot Apprentice", category: "reg", img: "SlotApprentice.png", 
+                description: "When lined up in the slot, players with this ability have access to four additional hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_SlotRouteMasterCount"]} 
+            },
+	    {
+                id: "Slot-O-Matic", name: "Slot-O-Matic", category: "reg", img: "SlotOMatic.png", 
+                description: "When lined up in the slot, receivers with this ability make faster cuts and have better hands when catching passes less than 10 yards from the LoS",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["CurrentCutMoveInRoute", "IsInSlot"], 
+                    deactive: ["IsPass11+YardsPastLOS", "TotalCutMovesInRoute"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceReceiverWinOnCutOneDef", "Catching_ChanceSpCatch"]} 
+            },
+	    {
+                id: "Speedster", name: "Speedster", category: "reg", img: "Speedster.png", 
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting speed pass rush moves",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceNoResistanceOnSpeedRush"]} 
+            },
+	    {
+                id: "Spin-Cycle", name: "Spin Cycle", category: "reg", img: "spincycle.png", 
+                description: "Ballcarriers with this ability have steerable spin animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_EliteSpinAnims"]} 
+            },
+	    {
+                id: "Spinner", name: "Spinner", category: "reg", img: "Spinner.png", 
+                description: "Ballcarriers with this ability have steerable spin animations.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceNoResistanceOnSpin"]} 
+            },
+	    {
+                id: "Steamroller", name: "Steamroller", category: "reg", img: "Steamroller.png", 
+                description: "Ballcarriers with this ability retain more of their forward momentum during tackles while travelling at high speeds.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_PhysicsBasedTacklePathResistance"]} 
+            },
+	    {
+                id: "Stonewall", name: "Stonewall", category: "reg", img: "Stonewall.png", 
+                description: "Defenders with this ability will frequently prevent additional yardage gains while tackling",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_ChanceLocatorBasedTackleDefenderWin"]} 
+            },
+	    {
+                id: "Strip-Specialist", name: "Strip Specialist", category: "reg", img: "StripSpecialist.png", 
+                description: "Defenders with this ability can still tackle effectively while trying to strip the football",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_Chance2ManTackleOutcome_NotBroken_OnStrip", "Tackle_ChanceNManTackleOutcome_NotBroken_OnStrip", "Tackle_EliteStripBallAnims"]} 
+            },
+	    {
+                id: "Swim-Club", name: "Swim Club", category: "reg", img: "SwimClub.png", 
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting swim/club pass rush moves",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceNoResistanceOnClub", "Defense_ChanceNoResistanceOnSwim"]} 
+            },
+	    {
+                id: "Tackle-Supreme", name: "Tackle Supreme", category: "reg", img: "TackleSupreme.png", 
+                description: "Defenders with this ability have better conservative/dive tackling, are rarely faked out by ballcarrier moves, and cannot be faked out when user-controlled.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ActiveTackleType", "RequestedTackleMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_Chance2ManTackleOutcome_NotBroken", "Tackle_Chance2ManTackleOutcome_NotBroken_OnFakeoutMove", "Tackle_ChanceFakeSkillMoveOutcome_NoFake", "Tackle_ChanceNManTackleOutcome_NotBroken", "Tackle_ChanceNManTackleOutcome_NotBroken_OnFakeoutMove", "Tackle_TackleAtDistance"]} 
+            },
+	    {
+                id: "Tank", name: "Tank", category: "reg", img: "Tank.png", 
+                description: "Ballcarriers with this ability will break almost any hit-stick tackle attempts made on them.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_Chance2ManTackleOutcome_Broken_OnHitStick"]} 
+            },
+	    {
+                id: "TE Apprentice", name: "TE Apprentice", category: "reg", img: "TEApprentice.png", 
+                description: "When lined up at tight end, players with this ability have access to four additional hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_TERouteMasterCount"]} 
+            },
+	    {
+                id: "Tear Proof", name: "Tear Proof", category: "reg", img: "TearProof.png", 
+                description: "Blockers with this ability defend against rip pass rush moves as if they had an additional resistance point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceIncreasedResistanceOnRipMoves"]} 
+            },
+	    {
+                id: "Threat-Detector", name: "Threat Detector", category: "reg", img: "ThreatDetector.png", 
+                description: "During preplay, players with this ability will highlight any oncoming blitzers on 3rd and 4th downs. Can be bluffed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsThirdOrFourthDown"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_HighlightBlitzersPreSnap"]} 
+            },
+	    {
+                id: "Tight-Out", name: "Tight Out", category: "reg", img: "TightOut.png", 
+                description: "Passers with this ability improve the catching prowess of all tight ends who are open on pass plays.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_GiftCatchChanceForSp_TE"]} 
+            },
+	    {
+                id: "Tip-Drill", name: "Tip Drill", category: "reg", img: "TipDrill.png", 
+                description: "Players with this ability have an increased chance to catch passes that have been tipped into the air.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_TipBallChanceBonus"]} 
+            },
+	    {
+                id: "Tireless-Runner", name: "Tireless Runner", category: "reg", img: "TirelessRunner.png", 
+                description: "Ballcarriers with this ability are effective at recovering from attempted tackles regardless of their current stamina.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["IsRunPlay"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_PhysicsBasedTackleIgnoreStaminaForRecovery"]} 
+            },
+	    {
+                id: "Tough-Nut", name: "Tough Nut", category: "reg", img: "ToughNut.png", 
+                description: "Blockers with this ability have an increased number of blocker resistance points",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_IncreaseResistanceSharedPool"]} 
+            },
+	    {
+                id: "Under-Pressure", name: "Under Pressure", category: "reg", img: "UnderPressure.png", 
+                description: "Defenders with this ability can apply pressure to the quarterback from a greater distance.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
+            },
+	    {
+                id: "Unfakeable", name: "Unfakeable", category: "reg", img: "Unfakeable.png", 
+                description: "Defenders with this ability are rarely faked out by ballcarrier moves (and cannot be faked out when user-controlled).",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_Chance2ManTackleOutcome_NotBroken_OnFakeoutMove", "Tackle_ChanceFakeSkillMoveOutcome_NoFake", "Tackle_ChanceNManTackleOutcome_NotBroken_OnFakeoutMove"]} 
+            },
+	    {
+                id: "Unpredictable", name: "Unpredictable", category: "reg", img: "Unpredictable.png", 
+                description: "Defenders with this ability are less likely to increase their blocker's resistance bars when performing shed wins",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceForOpposingBlockerNoResistance"]} 
+            },
+	    {
+                id: "Unspun", name: "Unspun", category: "reg", img: "Unspun.png", 
+                description: "Blockers with this ability defend against spin pass rush moves as if they had an additional resistance point",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceIncreasedResistanceOnSpinMoves"]} 
+            },
+	    {
+                id: "WR-Apprentice", name: "WR Apprentice", category: "reg", img: "WRApprentice.png", 
+                description: "When lined up at any wide receiver position, players with this ability have access to four additional hot routes during pre-play adjustments.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_OutsideRouteMasterCount", "Preplay_SlotRouteMasterCount"]} 
+            },
+	    {
+                id: "Zen Kicker", name: "Zen Kicker", category: "reg", img: "zenkicker.png", 
+                description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks over 45 yards.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_KickMeterFixedSpeed_AccuracyTimer", "Preplay_KickMeterFixedSpeed_PowerTimer"]} 
+            },
+	    {
+                id: "Gambit", name: "Gambit", category: "xf", img: "Gambit.png", 
+                description: "The best quarterbacks learn to take calculated risks. When they enter the zone, they can't be intercepted (by AI defenders) and have increased throw speed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ChanceAdjustPassAwayFromDefenders", "Passing_ChanceDisableInterceptions", "Passing_PassSpeedMod", "Passing_PassStrengthMod"]} 
+            },
+	    {
+                id: "Fearmonger", name: "Fearmonger", category: "xf", img: "Fearmonger.png", 
+                description: "Some pass rushers intimidate quarterbacks with their sheer presence. When they enter the zone, they can apply significant pressure on quarterbacks even while engaged with blockers.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
+            },
+	    {
+                id: "Dots", name: "Dots", category: "xf", img: "Dots.png", 
+                description: "Accurate passers know that ball placement is the difference between a touchdown and a turnover. When they enter the zone, all passes are thrown with perfect accuracy.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+	    {
+                id: "ProReads", name: "Pro Reads", category: "xf", img: "ProReads.png", 
+                description: "For great quarterbacks, vision and anticipation are paramount. When they enter the zone, their first open receiver is highlighted and they ignore defensive pressure.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PassIcon_HighlightOpenReceiver", "Passing_ChanceImmuneToPressure"]} 
+            },
+	    {
+                id: "Blitz-Radar", name: "Blitz Radar", category: "xf", img: "BlitzRadar.png", 
+                description: "Successful quarterbacks stay cool and stand confidently against the blitz. When they enter the zone, all blitzing linebackers and defensive backs are highlighted. Can be bluffed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_HighlightBlitzersAtSnap", "Preplay_HighlightBlitzersPreSnap"]} 
+            },
+	    {
+                id: "Bazooka", name: "Bazooka", category: "xf", img: "Bazooka.png", 
+                description: "Quarterbacks with generational arms have the power to stretch any defense to its breaking point. When they enter the zone, their maximum throw distance is increased.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ExtraDistanceBeforeHailMaryPassAnim", "Passing_MaxThrowDistanceOverride"]} 
+            },
+	    {
+                id: "Double-Me", name: "Double Me", category: "xf", img: "DoubleMe.png", 
+                description: "Aggressive receivers overpower defenders and attack the football. When they enter the zone, this ability increases their success rate on aggressive catches against single coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"],  "Output3": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "AIHint_Passing_OpenInSingleCoverage"]} 
+            },
+	    {
+                id: "RACemUp", name: "RAC 'em Up", category: "xf", img: "RACemUp.png", 
+                description: "RAC receivers fight for every possible yard after making a catch. When they enter the zone, this ability increases their success rate on RAC catches",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceReceiverWinOnCut"],  "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output3": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", 
+"Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", 
+"Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"] } 
+            },
+	    {
+                id: "Max-Security", name: "Max Security", category: "xf", img: "MaxSecurity.png", 
+                description: "A surehanded receiver is a quarterback's best friend. When they enter the zone, this ability increases their success rate (and decreases knockout chance) on possession catches.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"]} 
+            },
+	    {
+                id: "Shutdown", name: "Shutdown", category: "xf", img: "Shutdown.png", 
+                description: "Shutdown defenders have the talent to erase receivers from the game. When they enter the zone, their coverage is tighter and interceptions are more frequent on contested catches.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",  "CatchingDef_Def_ChanceDisablePhysicsForceKnockout"]} 
+            },
+	    {
+                id: "Run-&-Gun", name: "Run & Gun", category: "xf", img: "RunAndGun.png", 
+                description: "Many passers use a combination mobility and aggressiveness to make big plays. When they enter the zone, they have perfect accuracy while throwing on the run.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["OnTheRun"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy", "Passing_IgnoreOnTheRunThrowPowerPenalties"]} 
+            },
+	    {
+                id: "Escape-Artist", name: "Escape Artist", category: "xf", img: "EscapeArtist.png", 
+                description: "The slipperiest quarterbacks are capable of exploding out of the pocket at the slightest sign of trouble. When they enter the zone, their scramble speed is increased.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["GetPlayerStaminaPercent", "IsPTMNGLocoActive"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_ScrambleStyle_QbEliteScrambleMultiplier"]} 
+            },
+	    {
+                id: "Wrecking Ball", name: "Wrecking Ball", category: "xf", img: "WreckingBall.png", 
+                description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "Gamestyle"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
+            },
+	    {
+                id: "First-One-Free", name: "First One Free", category: "xf", img: "FirstOnesFree.png", 
+                description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "Gamestyle"], 
+                    deactive: ["NumJukeSucesses_ThisPlay", "NumSpinSucesses_ThisPlay", "NumHurdleSucesses_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove"]} 
+            },
+	    {
+                id: "Unstoppable-Force", name: "Unstoppable Force", category: "xf", img: "UnstoppableForce.png", 
+                description: "Elite pass rushers are a mix of strength, speed, and tenacity. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one pass blocks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"], "Output2": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction", "BlockingDef_ChanceRunDblTeamOutcome_DefWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Zone-Hawk", name: "Zone Hawk", category: "xf", img: "ZoneHawk.png", 
+                description: "Zone Hawk defenders lock down a part of the field. When they enter the zone, this ability increases the rate of interceptions while in zone coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ZoneDefender"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",
+"CatchingDef_Def_ChanceDisablePhysicsForceKnockout",
+"CatchingDef_PlayBall_BreakChance", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
+            },
+	    {
+                id: "Satellite", name: "Satellite", category: "xf", img: "Satellite.png", 
+                description: "Some running backs have the talent to be elite receivers. When they enter the zone, this ability increases their success rate on possession and RAC catches against single coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts",
+"Catching_ChanceSpCatch",
+"Catching_ChanceDisablePhysicsForceKnockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout",
+"Catching_ChanceBlockMpCatchOutcome_Interception",
+"Catching_ChanceMpCatchWin"]} 
+            },
+	    {
+                id: "Reinforcement", name: "Reinforcement", category: "xf", img: "Reinforcement.png", 
+                description: "The game's top defenders excel in all situations. When they enter the zone, this ability increases their chance of defeating run blocks, and disrupting catches via tackles.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch",
+"CatchingDef_ChanceCatchTackleOutcome_Knockout",
+"BlockingDef_ChanceImpactOutcome_DefWin",
+"BlockingDef_ChanceStandardOutcome_DefWin"]} 
+            },
+	    {
+                id: "Freight-Train", name: "Freight Train", category: "xf", img: "FreightTrain.png", 
+                description: "Freight Trains are relentless runners who refuse to go down on first contact. When they enter the zone, this ability increases their chance to break the next tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "Gamestyle"], 
+                    deactive: ["NumBrokenTackles_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken",
+"Running_Chance2ManTackleOutcome_Broken_OnStrip",
+"Running_ChanceNManTackleOutcome_Broken_OnStrip",
+"Running_Chance2ManTackleOutcome_Broken_OnHitStick",
+"Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
+            },
+	    {
+                id: "Run-Stuffer", name: "Run Stuffer", category: "xf", img: "RunStuffer.png", 
+                description: "Run Stuffers can singlehandedly disrupt an offense. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one run blocks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction",
+"BlockingDef_ChanceRunDblTeamOutcome_DefWin",
+"BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Brick-Wall", name: "Brick Wall", category: "xf", img: "BrickWall.png", 
+                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by any blitzing defender",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "InThePocket"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_AllowPowerBreakSackAnims", "Passing_ChanceBreakSack"]} 
+            },
+	    {
+                id: "Selfless", name: "Selfless", category: "xf", img: "Selfless.png", 
+                description: "When Selfless players are making plays their teammates are motivated to perform better. When they enter the zone, all on field teammates enter the zone as well.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_ForceAllTeammatesInTheZone"]} 
+            },
+	    {
+                id: "Momentum-Shift", name: "Momentum Shift", category: "xf", img: "MomentumShift.png", 
+                description: "Momentum Shift players demoralize their opponents. When they enter the zone, all on field opponents are knocked out of the zone or lose any progress towards entering the zone.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["General_KnockAllOpponentsOutOfTheZone"]} 
+            },
+	    {
+                id: "Truzz", name: "Truzz", category: "xf", img: "Truzz.png", 
+                description: "The most effective ball carriers prioritize maintaining possession over all else. When they enter the zone, no tackles made against them will result in a fumble.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChanceFumbleOutcome_KeepBall"]} 
+            },
+	    {
+                id: "Mossed", name: "Mossed", category: "xf", img: "Mossed.png", 
+                description: "True legendary receivers make the impossible possible. While in the zone, they have greatly increased success rate on aggressive catches 50+ yards from the line of scrimmage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["DownfieldThrowDistanceFromLOS", "RequestedCatchMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"]} 
+            },
+	    {
+                id: "Omaha", name: "Omaha", category: "xf", img: "Omaha.png", 
+                description: "Elite quarterbacks are molded by endless hours of film study. When they enter the zone, they have full vision of the seconday's defensive coverage before the snap.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_ShowDefCoveragePlayArt_DefensiveBacks"]} 
+            },
+	    {
+                id: "Relentless", name: "Relentless", category: "xf", img: "Relentless.png", 
+                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceRushMovesFree"]} 
+            },
+	    {
+                id: "Relentless", name: "Relentless", category: "xf", img: "Relentless.png", 
+                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceRushMovesFree"]} 
+            },
+	    {
+                id: "Universal-Coverage", name: "Universal Coverage", category: "xf", img: "UniversalCoverage.png", 
+                description: "The most physical coverage defenders prevent catches from happening even when their target has hands on the ball. When they enter the zone, they are nearly guaranteed knockouts.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
+            },
+	    {
+                id: "Avalanche", name: "Avalanche", category: "xf", img: "Avalanche.png", 
+                description: "There are tacklers and then there are these guys. When they enter the zone any successful hit-stick  made while running towards the line of scrimmage will result in a fumble.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Tackle_ChanceFumbleDownHillHitstick"]} 
+            },
+	    {
+                id: "Blitz", name: "Blitz", category: "xf", img: "Blitz.png", 
+                description: "Effective D-Line captains aren't just examples to follow, they are motivators. When they enter the zone, all opposing blockers have their resistance bars wiped out.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_WipeOffResistence"]} 
+            },
+	    {
+                id: "Vanguard", name: "Vanguard", category: "xf", img: "Vanguard.png", 
+                description: "Vanguard players are the reason running backs thank their blockers in the postgame interview. When they enter the zone, they are nearly guaranteed dominant impact block wins.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceImpactOutcome_OffSuperWin"]} 
+            },
+	    {
+                id: "YACEmUp", name: "YAC 'Em Up", category: "xf", img: "YACEmUp.png", 
+                description: "The best physical receivers don't just come down with the ball, they carry it home. When they enter the zone, they are nearly guaranteed to break their first post-catch tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: ["NumBrokenTackles_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken_OnStrip", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
+            },
+	    {
+                id: "Ankle-Breaker", name: "Ankle Breaker", category: "xf", img: "AnkleBreaker.png", 
+                description: "Truly devastating receiving threats are the ones that catch and can't be caught. When they enter the zone, they have increased fakeout rates on spin/juke/hurdle after the catch.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: ["NumJukeSuccesses_ThisPlay", "NumSpinSuccesses_ThisPlay", "NumHurdleSuccesses_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove"]} 
+            },
+	    {
+                id: "GrabAndSmash", name: "Grab And Smash", category: "xf", img: "GrabAndSmash.png", 
+                description: "Not all receivers need fancy footwork. When they enter the zone, they have increased success chance on stiff arm and truck attempts following the catch..",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
+            },
+	    {
+                id: "Bottleneck", name: "Bottleneck", category: "xf", img: "Bottleneck.png", 
+                description: "Bottleneck defenders realize that the best way to stop a route is to act early. When they enter the zone, they are highly likely to dominantly win any man press encounter.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChancePressOutcome_DefSuperWin", "CatchingDef_ChancePressDirection_DefenderAlwaysCorrect", "CatchingDef_ChanceCounterOutcome_DefSuperWin", "CatchingDef_ChanceBlockCounterOutcome_OffWin", "CatchingDef_ChanceBlockCounterOutcome_OffSuperWin",]} 
+            },
+	    {
+                id: "Mind Reader", name: "MindReader", category: "xf", img: "MindReader.png", 
+                description: "The best defenders are capable of dismantling an offense like they knew the playcall the whole time. When they enter the zone, they can see offensive play art via coach cam.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_ShowOffensePlayArt"]} 
+            },
+	    {
+                id: "Phenom", name: "Phenom", category: "xf", img: "Phenom.png", 
+                description: "Some athletes defy classification as much as they defy boundaries. When they enter the zone, they are highly likely to win the first interaction they have with a defender.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: ["NumJukeSuccesses_ThisPlay", "NumSpinSuccesses_ThisPlay", "NumHurdleSuccesses_ThisPlay", "NumStiffArmSuccesses_ThisPlay", "NumTruckSuccesses_ThisPlay", "NumBrokenTackles_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove", "Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken_OnStrip", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
+            },
+	    {
+                id: "Route-Artist", name: "Route Artist", category: "xf", img: "RouteArtist.png", 
+                description: "Receivers with pure route running are like artists. When in the zone, their route can be built before the snap",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_EnableCustomHotRoutes"]} 
+            },
+	    {
+                id: "Colossus", name: "Colossus", category: "xf", img: "Colossus.png", 
+                description: "Receivers with pure route running are like artists. When in the zone, their route can be built before the snap",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin"]} 
+            },
+	    {
+                id: "Dual-Threat", name: "Dual Threat", category: "xf", img: "DualThreat.png", 
+                description: "The most devastating defensive players often excel via versatility. When they enter the zone, they have an increased chance of defeating pass blocks, and knocking catches loose.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout"],  "Output2": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"]} 
+            }
+        ];
+
+        let compareIds = [];
+        let currentTab = "reg";
+        let mainSearchQuery = "";
+        let filterTag = null; 
+        let filterType = "";
+        window.matrixQuery = "";
+        window.portalSearchQuery = "";
+
+        function resetAndHome() { 
+            mainSearchQuery = ""; 
+            filterTag = null; 
+            compareIds = []; 
+            render('list'); 
+        }
+
+        function setGlobalTab(t) { 
+            currentTab = t; 
+            filterTag = null; 
+            compareIds = []; 
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${t}`).classList.add('active');
+            render('list'); 
+        }
+
+        function toggleCompare(id) {
+            const i = compareIds.indexOf(id);
+            if (i > -1) compareIds.splice(i, 1);
+            else compareIds.push(id);
+            updateGlobalCounter();
+        }
+
+        function updateGlobalCounter() {
+            const vsHeader = document.getElementById('vs-count-main');
+            if(vsHeader) vsHeader.innerHTML = compareIds.length > 0 ? `<span class="bg-yellow-500 text-black px-1.5 py-0.5 rounded-sm font-black text-[7px]">VS: ${compareIds.length}</span>` : '';
+        }
+
+        function filterByTrait(key) { 
+            compareIds = []; 
+            filterTag = key;
+            if (triggerLookup[key]) filterType = "TRIGGER";
+            else if (outputLookup[key] || key.includes("Catching_")) filterType = "OUTPUT";
+            else filterType = "TRAIT";
+            render('list'); 
+        }
+
+        function render(view, dataId = null) {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            updateGlobalCounter();
+
+            if (view === 'list') {
+                let filtered = filterTag ? abilities.filter(a => [...a.triggers.active, ...a.triggers.deactive, ...Object.values(a.outputGroups).flat()].includes(filterTag)) 
+                                         : abilities.filter(a => (mainSearchQuery ? true : a.category === currentTab) && a.name.toLowerCase().includes(mainSearchQuery.toLowerCase()));
+
+                let filterLabel = "";
+                if (filterTag) {
+                    const lookup = triggerLookup[filterTag] || outputLookup[filterTag] || { l: filterTag };
+                    filterLabel = `${filterType}: ${lookup.l}`;
+                }
+
+                app.innerHTML = `
+                    <div class="mb-2 space-y-1">
+                        <input type="text" id="main-search" placeholder="FILTER CORE..." value="${mainSearchQuery}" class="w-full bg-zinc-900 border border-zinc-800 p-1.5 rounded text-[8px] font-black uppercase outline-none focus:border-yellow-500">
+                        ${filterTag ? `
+                            <div class="flex items-center justify-between bg-yellow-500/10 border border-yellow-500/40 p-1.5 rounded-sm">
+                                <span class="gold-text font-black text-[7px] tracking-tighter uppercase italic">${filterLabel}</span>
+                                <button onclick="filterTag=null; render('list')" class="text-white text-[10px] leading-none px-1">✕</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        ${filtered.length === 0 ? '<div class="text-center text-zinc-600 font-black text-[8px] py-10 uppercase">No Data Matches</div>' : ''}
+                        ${filtered.map(a => `
+                            <div class="card-bg p-1.5 flex items-center justify-between border-l-2 ${compareIds.includes(a.id) ? 'border-l-yellow-500 bg-yellow-500/5' : 'border-l-zinc-800'}">
+                                <div class="flex items-center gap-2 flex-1 cursor-pointer" onclick="compareIds=[]; render('detail', '${a.id}')">
+                                    <img src="${iconPath}${a.img}" class="ability-icon" onerror="this.src='https://placehold.co/16x16/111/d4af37?text=?'">
+                                    <div class="font-black uppercase text-[10px] tracking-tight">
+                                        ${a.name} ${a.category === 'xf' ? '<span class="text-red-500 ml-1 font-black text-[8px]">[XF]</span>' : ''}
+                                    </div>
+                                </div>
+                                <input type="checkbox" onchange="toggleCompare('${a.id}'); render('list')" ${compareIds.includes(a.id) ? 'checked' : ''}>
+                            </div>`).join('')}
+                    </div>
+                    ${compareIds.length > 1 ? `<button onclick="render('matrix')" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-black font-black px-6 py-2 rounded uppercase text-[8px] z-50 shadow-lg">RUN COMPARISON</button>` : ''}`;
+                
+                const mSearch = document.getElementById('main-search');
+                if (document.activeElement !== mSearch && mainSearchQuery.length > 0) {
+                    mSearch.focus();
+                    mSearch.setSelectionRange(mSearch.value.length, mSearch.value.length);
+                }
+                mSearch.addEventListener('input', (e) => { 
+                    mainSearchQuery = e.target.value; 
+                    if (filterTag) filterTag = null;
+                    render('list'); 
+                });
+            }
+
+            if (view === 'detail') {
+                const a = abilities.find(x => x.id === dataId);
+                app.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <button onclick="compareIds=[]; render('list')" class="text-zinc-500 font-black text-[7px] uppercase">← BACK</button>
+                        <button onclick="openPortal('${a.id}')" class="gold-text font-black text-[7px] border border-yellow-500/30 px-2 py-0.5">COMPARE +</button>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${iconPath}${a.img}" class="ability-icon-lg card-bg p-1" onerror="this.src='https://placehold.co/32x32/111/d4af37?text=?'">
+                        <h2 class="text-md font-black gold-text uppercase leading-none text-[12px]">${a.name} ${a.category === 'xf' ? '<span class="text-red-500 text-[10px] ml-1">[XF]</span>' : ''}</h2>
+                    </div>
+                    <div class="card-bg p-2 border-l-2 border-yellow-500 mb-2 italic text-[10px] text-zinc-400">"${a.description}"</div>
+                    <div class="space-y-1.5">
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="space-y-1">
+                                <div class="text-[6px] font-black uppercase text-green-500">Activations</div>
+                                <div class="card-bg p-1.5">
+                                    ${a.triggers.active.map(k => `
+                                        <div class="group-item cursor-pointer" onclick="filterByTrait('${k}')">
+                                            <div class="font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div>
+                                            <div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div>
+                                        </div>`).join('')}
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="text-[6px] font-black uppercase text-red-500">Deactivations</div>
+                                <div class="card-bg p-1.5">
+                                    ${a.triggers.deactive.map(k => `
+                                        <div class="group-item cursor-pointer" onclick="filterByTrait('${k}')">
+                                            <div class="font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div>
+                                            <div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div>
+                                        </div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[6px] font-black uppercase text-zinc-500 mt-1">Output Analysis</div>
+                        ${Object.entries(a.outputGroups).map(([g, keys]) => `
+                            <div class="card-bg p-1.5">
+                                <div class="gold-text text-[8px] font-black uppercase mb-1 border-b border-zinc-800 pb-0.5">${g}</div>
+                                ${keys.map(k => `
+                                    <div onclick="filterByTrait('${k}')" class="group-item cursor-pointer">
+                                        <div class="text-[10px] font-bold uppercase">${outputLookup[k]?.l || k}</div>
+                                        <div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div>
+                                    </div>`).join('')}
+                            </div>`).join('')}
+                    </div>`;
+            }
+
+            if (view === 'matrix') {
+                const selected = abilities.filter(a => compareIds.includes(a.id));
+                const allAttributes = [...new Set(selected.flatMap(a => Object.values(a.outputGroups).flat()))];
+                const allActivations = [...new Set(selected.flatMap(a => a.triggers.active))];
+                const allDeactivations = [...new Set(selected.flatMap(a => a.triggers.deactive))];
+                
+                const matrixSearch = (window.matrixQuery || "").toLowerCase();
+                const filterRow = (key) => (triggerLookup[key]?.l || outputLookup[key]?.l || key).toLowerCase().includes(matrixSearch);
+
+                app.innerHTML = `
+                    <div class="flex gap-2 items-center mb-2">
+                        <button onclick="compareIds=[]; render('list')" class="text-zinc-500 font-black text-[7px] uppercase">← EXIT</button>
+                        <input type="text" id="matrix-inner-search" placeholder="SEARCH MATRIX..." value="${window.matrixQuery || ''}" class="flex-1 bg-zinc-900 border border-zinc-800 p-1 rounded text-[7px] font-black uppercase outline-none focus:border-yellow-500">
+                    </div>
+                    <div class="matrix-container card-bg custom-scroll flex-1">
+                        <table class="matrix-table">
+                            <tr>
+                                <th class="sticky-col gold-text text-[8px]">CORE_DATA</th>
+                                ${selected.map(a => `<th class="check-col"><div class="header-cell-content"><img src="${iconPath}${a.img}" class="matrix-icon" onerror="this.src='https://placehold.co/18x18/111/d4af37?text=?'"><div class="header-text-rotated">${a.name} ${a.category === 'xf' ? '<br><span class="text-red-500 text-[7px]">[XF]</span>' : ''}</div></div></th>`).join('')}
+                            </tr>
+                            <tr><td colspan="${selected.length + 1}" class="section-divider">Outputs</td></tr>
+                            ${allAttributes.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="gold-text font-black text-[7px]">${outputLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-white font-black">${Object.values(a.outputGroups).flat().includes(k) ? '●' : ''}</td>`).join('')}</tr>`).join('')}
+                            <tr><td colspan="${selected.length + 1}" class="section-divider">Activations</td></tr>
+                            ${allActivations.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="text-green-500 font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-green-500 font-black">${a.triggers.active.includes(k) ? '✓' : ''}</td>`).join('')}</tr>`).join('')}
+                            <tr><td colspan="${selected.length + 1}" class="section-divider">Deactivations</td></tr>
+                            ${allDeactivations.filter(filterRow).map(k => `<tr><td class="sticky-col"><div class="text-red-500 font-black text-[10px] uppercase">${triggerLookup[k]?.l || k}</div><div class="text-[8px] text-zinc-500 leading-none">${triggerLookup[k]?.d || ''}</div></td>${selected.map(a => `<td class="check-col text-red-500 font-black">${a.triggers.deactive.includes(k) ? '✕' : ''}</td>`).join('')}</tr>`).join('')}
+                        </table>
+                    </div>`;
+
+                const mSearch = document.getElementById('matrix-inner-search');
+                if (document.activeElement !== mSearch && window.matrixQuery.length > 0) {
+                    mSearch.focus();
+                    mSearch.setSelectionRange(mSearch.value.length, mSearch.value.length);
+                }
+                mSearch.addEventListener('input', (e) => {
+                    window.matrixQuery = e.target.value;
+                    render('matrix');
+                });
+            }
+        }
+
+        function openPortal(currentId) { 
+            compareIds = [currentId]; 
+            window.portalSearchQuery = "";
+            const overlay = document.createElement('div'); overlay.className = 'portal-overlay'; overlay.id = 'portal'; 
+            document.body.appendChild(overlay); 
+            refreshPortalUI(); 
+        }
+        
+        function refreshPortalUI() {
+            const portal = document.getElementById('portal');
+            const searchQuery = (window.portalSearchQuery || "").toLowerCase();
+            const filtered = abilities.filter(a => a.name.toLowerCase().includes(searchQuery));
+
+            portal.innerHTML = `
+                <div class="card-bg w-full max-w-xs p-2 border border-yellow-500/40">
+                    <div class="mb-2">
+                        <input type="text" id="portal-search" placeholder="FILTER SELECTIONS..." value="${window.portalSearchQuery || ''}" class="w-full bg-zinc-900 border border-zinc-800 p-1.5 rounded text-[8px] font-black uppercase outline-none focus:border-yellow-500">
+                    </div>
+                    <div class="space-y-1 mb-2 max-h-60 overflow-y-auto custom-scroll">
+                        ${filtered.length === 0 ? '<div class="text-center text-zinc-600 font-black text-[7px] py-4 uppercase">No Matches</div>' : ''}
+                        ${filtered.map(a => `
+                            <div class="flex items-center justify-between p-1.5 hover:bg-zinc-800 cursor-pointer" onclick="toggleCompare('${a.id}'); refreshPortalUI()">
+                                <div class="flex items-center gap-2">
+                                    <img src="${iconPath}${a.img}" class="ability-icon" onerror="this.src='https://placehold.co/16x16/111/d4af37?text=?'">
+                                    <span class="font-bold text-[10px] uppercase">${a.name} ${a.category === 'xf' ? '<span class="ml-1 text-red-500 font-black text-[8px]">[XF]</span>' : ''}</span>
+                                </div>
+                                <input type="checkbox" ${compareIds.includes(a.id) ? 'checked' : ''} onchange="event.preventDefault()">
+                            </div>`).join('')}
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button onclick="compareIds=[]; document.getElementById('portal').remove(); render('list')" class="flex-1 py-1.5 bg-zinc-800 font-black text-[7px]">CANCEL</button>
+                        <button onclick="document.getElementById('portal').remove(); render('matrix')" class="flex-1 py-1.5 bg-yellow-500 text-black font-black text-[7px]">COMPARE (${compareIds.length})</button>
+                    </div>
+                </div>`;
+
+            const pSearch = document.getElementById('portal-search');
+            if (pSearch) {
+                if (document.activeElement !== pSearch && window.portalSearchQuery.length > 0) {
+                    pSearch.focus();
+                    pSearch.setSelectionRange(pSearch.value.length, pSearch.value.length);
+                }
+                pSearch.addEventListener('input', (e) => {
+                    window.portalSearchQuery = e.target.value;
+                    refreshPortalUI();
+                });
+            }
+        }
+
+        setGlobalTab('reg');
+    </script>
+</body>
+</html>
