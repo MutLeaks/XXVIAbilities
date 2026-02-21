@@ -68,7 +68,7 @@ const triggerLookup = {
     "CurrentCutMoveInRoute": { "l": "Current Cut Move In Route", "d": "Identifies the current break or cut in the receiver's route." },
     "CurrentDown": { "l": "Current Down", "d": "Checks the current play's down (1st, 2nd, 3rd, or 4th)." },
     "DownfieldThrowDistanceFromLOS": { "l": "Throw Distance from LOS", "d": "The depth of the pass relative to the Line of Scrimmage." },
-    "DownFieldThrowDistanceFromQBUnder30": { "l": "Throw Distance From QB Under 30", "d": "Checks if the throw distance relative to the QB is under 30 yards." },
+    "DownFieldThrowDistanceFromQBUnder40": { "l": "Throw Distance From QB Under 40", "d": "Checks if the throw distance relative to the QB is under 30 yards." },
     "EngagedInBlock": { "l": "Engaged In Block", "d": "Checks if the player is currently in a blocking interaction." },
     "Gamestyle": { "l": "Game Style", "d": "Identifies the current game difficulty or play style (Arcade, Simulation, Competitive)." },
     "GetPlayerStaminaPercent": { "l": "Player Stamina Percent", "d": "Calculates the player's remaining stamina as a percentage." },
@@ -129,7 +129,7 @@ const triggerLookup = {
     "NumTruckSuccesses_ThisPlay": { "l": "Truck Successes This Play", "d": "Counts successful truck moves performed by the ball carrier." },
     "OnHomeTeam": { "l": "On Home Team", "d": "Checks if the player is the home team." },
     "OnTheRun": { "l": "On The Run", "d": "Checks if the player is passing or catching while in a full movement state." },
-    "PlayerVelocityDirection": { "l": "Player Velocity Direction", "d": "Calculates the player's current speed and direction." },
+    "PlayerVelocityDirection": { "l": "Player Velocity Direction", "d": "Moving the QB backward (225-315°) activates this trigger." },
     "PlayInfo_OffenseType": { "l": "Offense Play Type", "d": "Determines the category of the offensive play call." },
     "RanPlay5+ThisQ": { "l": "Ran Play 5+ Times This Quarter", "d": "Checks if the same play has been called 5 or more times in the current quarter." },
     "RequestedCatchMechanic": { "l": "Requested Catch Mechanic", "d": "Checks for user input regarding catch type (Aggressive, Possession, RAC)." },
@@ -537,7 +537,7 @@ const outputLookup = {
                 description: "Passers with this ability have perfect accuracy on all throws under 40 yards while running outside the pocket (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["DownFieldThrowDistanceFromQBUnder30", "IsThrowToSameSideAsBody", "OnTheRun"], 
+                    active: ["DownFieldThrowDistanceFromQBUnder40", "IsThrowToSameSideAsBody", "OnTheRun"], 
                     deactive: ["InThePocket", "IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure",  "PlayerVelocityDirection"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_IgnoreOnTheRunThrowPowerPenalties", "Passing_PerfectAccuracy"]} 
@@ -1529,8 +1529,8 @@ const outputLookup = {
                 description: "Passers with this ability have perfect accuracy on all unpressured throws while their feet are set outside the pocket (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["OnTheRun"], 
-                    deactive: ["InThePocket", "IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure"] 
+                    active: [], 
+                    deactive: ["OnTheRun", "InThePocket", "IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure"] 
                 }, 
                 outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
             },
