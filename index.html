@@ -787,7 +787,7 @@ const outputLookup = {
                 description: "Defenders with this ability force more catch knockouts and react quicker in any flat zone coverage, less than 10 yards from the LoS and outside the hash marks.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsInZoneDefense", "IsThrowTargetOutsideHashmarks"], 
+                    active: ["IsInZoneDefense", "IsThrowTargetOutsideHashmarks", "DownfieldThrowDistanceFromLOS"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["CatchingDef_BreakOnThrowTimeReductionPercent", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_PlayBall_BreakChance"]} 
@@ -1960,54 +1960,24 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Preplay_KickMeterFixedSpeed_AccuracyTimer", "Preplay_KickMeterFixedSpeed_PowerTimer"]} 
             },
 	    {
-                id: "Gambit", name: "Gambit", category: "xf", img: "Gambit.png", 
-                description: "The best quarterbacks learn to take calculated risks. When they enter the zone, they can't be intercepted (by AI defenders) and have increased throw speed.",
+                id: "Ankle-Breaker", name: "Ankle Breaker", category: "xf", img: "AnkleBreaker.png", 
+                description: "Truly devastating receiving threats are the ones that catch and can't be caught. When they enter the zone, they have increased fakeout rates on spin/juke/hurdle after the catch.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
-                    deactive: [] 
+                    active: ["HadMadeCatch"], 
+                    deactive: ["NumJukeSuccesses_ThisPlay", "NumSpinSuccesses_ThisPlay", "NumHurdleSuccesses_ThisPlay"] 
                 }, 
-                outputGroups: { "Output1": ["Passing_ChanceAdjustPassAwayFromDefenders", "Passing_ChanceDisableInterceptions", "Passing_PassSpeedMod", "Passing_PassStrengthMod"]} 
+                outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove"]} 
             },
 	    {
-                id: "Fearmonger", name: "Fearmonger", category: "xf", img: "Fearmonger.png", 
-                description: "Some pass rushers intimidate quarterbacks with their sheer presence. When they enter the zone, they can apply significant pressure on quarterbacks even while engaged with blockers.",
+                id: "Avalanche", name: "Avalanche", category: "xf", img: "Avalanche.png", 
+                description: "There are tacklers and then there are these guys. When they enter the zone any successful hit-stick  made while running towards the line of scrimmage will result in a fumble.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
-            },
-	    {
-                id: "Dots", name: "Dots", category: "xf", img: "Dots.png", 
-                description: "Accurate passers know that ball placement is the difference between a touchdown and a turnover. When they enter the zone, all passes are thrown with perfect accuracy.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
-            },
-	    {
-                id: "ProReads", name: "Pro Reads", category: "xf", img: "ProReads.png", 
-                description: "For great quarterbacks, vision and anticipation are paramount. When they enter the zone, their first open receiver is highlighted and they ignore defensive pressure.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Passing_PassIcon_HighlightOpenReceiver", "Passing_ChanceImmuneToPressure"]} 
-            },
-	    {
-                id: "Blitz-Radar", name: "Blitz Radar", category: "xf", img: "BlitzRadar.png", 
-                description: "Successful quarterbacks stay cool and stand confidently against the blitz. When they enter the zone, all blitzing linebackers and defensive backs are highlighted. Can be bluffed.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Preplay_HighlightBlitzersAtSnap", "Preplay_HighlightBlitzersPreSnap"]} 
+                outputGroups: { "Output1": ["Tackle_ChanceFumbleDownHillHitstick"]} 
             },
 	    {
                 id: "Bazooka", name: "Bazooka", category: "xf", img: "Bazooka.png", 
@@ -2020,6 +1990,66 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Passing_ExtraDistanceBeforeHailMaryPassAnim", "Passing_MaxThrowDistanceOverride"]} 
             },
 	    {
+                id: "Blitz", name: "Blitz", category: "xf", img: "Blitz.png", 
+                description: "Effective D-Line captains aren't just examples to follow, they are motivators. When they enter the zone, all opposing blockers have their resistance bars wiped out.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_WipeOffResistence"]} 
+            },
+	    {
+                id: "Blitz-Radar", name: "Blitz Radar", category: "xf", img: "BlitzRadar.png", 
+                description: "Successful quarterbacks stay cool and stand confidently against the blitz. When they enter the zone, all blitzing linebackers and defensive backs are highlighted. Can be bluffed.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_HighlightBlitzersAtSnap", "Preplay_HighlightBlitzersPreSnap"]} 
+            },
+	    {
+                id: "Bottleneck", name: "Bottleneck", category: "xf", img: "Bottleneck.png", 
+                description: "Bottleneck defenders realize that the best way to stop a route is to act early. When they enter the zone, they are highly likely to dominantly win any man press encounter.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChancePressOutcome_DefSuperWin", "CatchingDef_ChancePressDirection_DefenderAlwaysCorrect", "CatchingDef_ChanceCounterOutcome_DefSuperWin", "CatchingDef_ChanceBlockCounterOutcome_OffWin", "CatchingDef_ChanceBlockCounterOutcome_OffSuperWin",]} 
+            },
+	    {
+                id: "Brick-Wall", name: "Brick Wall", category: "xf", img: "BrickWall.png", 
+                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by any blitzing defender",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "InThePocket"], 
+                    deactive: ["NumSackAttemptsAgainst_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Passing_AllowPowerBreakSackAnims", "Passing_ChanceBreakSack"]} 
+            },
+	    {
+                id: "Colossus", name: "Colossus", category: "xf", img: "Colossus.png", 
+                description: "Receivers with pure route running are like artists. When in the zone, their route can be built before the snap",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin"]} 
+            },
+	    {
+                id: "Dots", name: "Dots", category: "xf", img: "Dots.png", 
+                description: "Accurate passers know that ball placement is the difference between a touchdown and a turnover. When they enter the zone, all passes are thrown with perfect accuracy.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
+            },
+{
                 id: "Double-Me", name: "Double Me", category: "xf", img: "DoubleMe.png", 
                 description: "Aggressive receivers overpower defenders and attack the football. When they enter the zone, this ability increases their success rate on aggressive catches against single coverage.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
@@ -2030,46 +2060,14 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"],  "Output3": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "AIHint_Passing_OpenInSingleCoverage"]} 
             },
 	    {
-                id: "RACemUp", name: "RAC 'em Up", category: "xf", img: "RACemUp.png", 
-                description: "RAC receivers fight for every possible yard after making a catch. When they enter the zone, this ability increases their success rate on RAC catches",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["RequestedCatchMechanic"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceReceiverWinOnCut"],  "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output3": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", 
-"Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", 
-"Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"] } 
-            },
-	    {
-                id: "Max-Security", name: "Max Security", category: "xf", img: "MaxSecurity.png", 
-                description: "A surehanded receiver is a quarterback's best friend. When they enter the zone, this ability increases their success rate (and decreases knockout chance) on possession catches.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["RequestedCatchMechanic"], 
-                    deactive: ["IsThrowIntoDoubleCoverage"] 
-                }, 
-                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"]} 
-            },
-	    {
-                id: "Shutdown", name: "Shutdown", category: "xf", img: "Shutdown.png", 
-                description: "Shutdown defenders have the talent to erase receivers from the game. When they enter the zone, their coverage is tighter and interceptions are more frequent on contested catches.",
+                id: "Dual-Threat", name: "Dual Threat", category: "xf", img: "DualThreat.png", 
+                description: "The most devastating defensive players often excel via versatility. When they enter the zone, they have an increased chance of defeating pass blocks, and knocking catches loose.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",  "CatchingDef_Def_ChanceDisablePhysicsForceKnockout"]} 
-            },
-	    {
-                id: "Run-&-Gun", name: "Run & Gun", category: "xf", img: "RunAndGun.png", 
-                description: "Many passers use a combination mobility and aggressiveness to make big plays. When they enter the zone, they have perfect accuracy while throwing on the run.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["OnTheRun"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Passing_PerfectAccuracy", "Passing_IgnoreOnTheRunThrowPowerPenalties"]} 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout"],  "Output2": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"]} 
             },
 	    {
                 id: "Escape-Artist", name: "Escape Artist", category: "xf", img: "EscapeArtist.png", 
@@ -2082,16 +2080,16 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Passing_ScrambleStyle_QbEliteScrambleMultiplier"]} 
             },
 	    {
-                id: "Wrecking Ball", name: "Wrecking Ball", category: "xf", img: "WreckingBall.png", 
-                description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
+                id: "Fearmonger", name: "Fearmonger", category: "xf", img: "Fearmonger.png", 
+                description: "Some pass rushers intimidate quarterbacks with their sheer presence. When they enter the zone, they can apply significant pressure on quarterbacks even while engaged with blockers.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["PlayInfo_OffenseType", "Gamestyle"], 
+                    active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
+                outputGroups: { "Output1": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
             },
-	    {
+{
                 id: "First-One-Free", name: "First One Free", category: "xf", img: "FirstOnesFree.png", 
                 description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
@@ -2100,55 +2098,6 @@ const outputLookup = {
                     deactive: ["NumJukeSucesses_ThisPlay", "NumSpinSucesses_ThisPlay", "NumHurdleSucesses_ThisPlay"] 
                 }, 
                 outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove"]} 
-            },
-	    {
-                id: "Unstoppable-Force", name: "Unstoppable Force", category: "xf", img: "UnstoppableForce.png", 
-                description: "Elite pass rushers are a mix of strength, speed, and tenacity. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one pass blocks.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["PlayInfo_OffenseType"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"], "Output2": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction", "BlockingDef_ChanceRunDblTeamOutcome_DefWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
-            },
-	    {
-                id: "Zone-Hawk", name: "Zone Hawk", category: "xf", img: "ZoneHawk.png", 
-                description: "Zone Hawk defenders lock down a part of the field. When they enter the zone, this ability increases the rate of interceptions while in zone coverage.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["ZoneDefender"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",
-"CatchingDef_Def_ChanceDisablePhysicsForceKnockout",
-"CatchingDef_PlayBall_BreakChance", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
-            },
-	    {
-                id: "Satellite", name: "Satellite", category: "xf", img: "Satellite.png", 
-                description: "Some running backs have the talent to be elite receivers. When they enter the zone, this ability increases their success rate on possession and RAC catches against single coverage.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["RequestedCatchMechanic"], 
-                    deactive: ["IsThrowIntoDoubleCoverage"] 
-                }, 
-                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts",
-"Catching_ChanceSpCatch",
-"Catching_ChanceDisablePhysicsForceKnockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout",
-"Catching_ChanceBlockMpCatchOutcome_Interception",
-"Catching_ChanceMpCatchWin"]} 
-            },
-	    {
-                id: "Reinforcement", name: "Reinforcement", category: "xf", img: "Reinforcement.png", 
-                description: "The game's top defenders excel in all situations. When they enter the zone, this ability increases their chance of defeating run blocks, and disrupting catches via tackles.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch",
-"CatchingDef_ChanceCatchTackleOutcome_Knockout",
-"BlockingDef_ChanceImpactOutcome_DefWin",
-"BlockingDef_ChanceStandardOutcome_DefWin"]} 
             },
 	    {
                 id: "Freight-Train", name: "Freight Train", category: "xf", img: "FreightTrain.png", 
@@ -2165,36 +2114,44 @@ const outputLookup = {
 "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
             },
 	    {
-                id: "Run-Stuffer", name: "Run Stuffer", category: "xf", img: "RunStuffer.png", 
-                description: "Run Stuffers can singlehandedly disrupt an offense. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one run blocks.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["PlayInfo_OffenseType"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction",
-"BlockingDef_ChanceRunDblTeamOutcome_DefWin",
-"BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
-            },
-	    {
-                id: "Brick-Wall", name: "Brick Wall", category: "xf", img: "BrickWall.png", 
-                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by any blitzing defender",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["PlayInfo_OffenseType", "InThePocket"], 
-                    deactive: ["NumSackAttemptsAgainst_ThisPlay"] 
-                }, 
-                outputGroups: { "Output1": ["Passing_AllowPowerBreakSackAnims", "Passing_ChanceBreakSack"]} 
-            },
-	    {
-                id: "Selfless", name: "Selfless", category: "xf", img: "Selfless.png", 
-                description: "When Selfless players are making plays their teammates are motivated to perform better. When they enter the zone, all on field teammates enter the zone as well.",
+                id: "Gambit", name: "Gambit", category: "xf", img: "Gambit.png", 
+                description: "The best quarterbacks learn to take calculated risks. When they enter the zone, they can't be intercepted (by AI defenders) and have increased throw speed.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["General_ForceAllTeammatesInTheZone"]} 
+                outputGroups: { "Output1": ["Passing_ChanceAdjustPassAwayFromDefenders", "Passing_ChanceDisableInterceptions", "Passing_PassSpeedMod", "Passing_PassStrengthMod"]} 
+            },
+	    {
+                id: "GrabAndSmash", name: "Grab And Smash", category: "xf", img: "GrabAndSmash.png", 
+                description: "Not all receivers need fancy footwork. When they enter the zone, they have increased success chance on stiff arm and truck attempts following the catch..",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
+            },
+{
+                id: "Max-Security", name: "Max Security", category: "xf", img: "MaxSecurity.png", 
+                description: "A surehanded receiver is a quarterback's best friend. When they enter the zone, this ability increases their success rate (and decreases knockout chance) on possession catches.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output2": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"]} 
+            },
+	    {
+                id: "Mind Reader", name: "MindReader", category: "xf", img: "MindReader.png", 
+                description: "The best defenders are capable of dismantling an offense like they knew the playcall the whole time. When they enter the zone, they can see offensive play art via coach cam.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Preplay_ShowOffensePlayArt"]} 
             },
 	    {
                 id: "Momentum-Shift", name: "Momentum Shift", category: "xf", img: "MomentumShift.png", 
@@ -2205,16 +2162,6 @@ const outputLookup = {
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["General_KnockAllOpponentsOutOfTheZone"]} 
-            },
-	    {
-                id: "Truzz", name: "Truzz", category: "xf", img: "Truzz.png", 
-                description: "The most effective ball carriers prioritize maintaining possession over all else. When they enter the zone, no tackles made against them will result in a fumble.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Running_ChanceFumbleOutcome_KeepBall"]} 
             },
 	    {
                 id: "Mossed", name: "Mossed", category: "xf", img: "Mossed.png", 
@@ -2237,106 +2184,6 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Preplay_ShowDefCoveragePlayArt_DefensiveBacks"]} 
             },
 	    {
-                id: "Relentless", name: "Relentless", category: "xf", img: "Relentless.png", 
-                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Defense_ChanceRushMovesFree"]} 
-            },
-	    {
-                id: "Universal-Coverage", name: "Universal Coverage", category: "xf", img: "UniversalCoverage.png", 
-                description: "The most physical coverage defenders prevent catches from happening even when their target has hands on the ball. When they enter the zone, they are nearly guaranteed knockouts.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
-            },
-	    {
-                id: "Avalanche", name: "Avalanche", category: "xf", img: "Avalanche.png", 
-                description: "There are tacklers and then there are these guys. When they enter the zone any successful hit-stick  made while running towards the line of scrimmage will result in a fumble.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Tackle_ChanceFumbleDownHillHitstick"]} 
-            },
-	    {
-                id: "Blitz", name: "Blitz", category: "xf", img: "Blitz.png", 
-                description: "Effective D-Line captains aren't just examples to follow, they are motivators. When they enter the zone, all opposing blockers have their resistance bars wiped out.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["BlockingDef_WipeOffResistence"]} 
-            },
-	    {
-                id: "Vanguard", name: "Vanguard", category: "xf", img: "Vanguard.png", 
-                description: "Vanguard players are the reason running backs thank their blockers in the postgame interview. When they enter the zone, they are nearly guaranteed dominant impact block wins.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Blocking_ChanceImpactOutcome_OffSuperWin"]} 
-            },
-	    {
-                id: "YACEmUp", name: "YAC 'Em Up", category: "xf", img: "YACEmUp.png", 
-                description: "The best physical receivers don't just come down with the ball, they carry it home. When they enter the zone, they are nearly guaranteed to break their first post-catch tackle.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["HadMadeCatch"], 
-                    deactive: ["NumBrokenTackles_ThisPlay"] 
-                }, 
-                outputGroups: { "Output1": ["Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken_OnStrip", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
-            },
-	    {
-                id: "Ankle-Breaker", name: "Ankle Breaker", category: "xf", img: "AnkleBreaker.png", 
-                description: "Truly devastating receiving threats are the ones that catch and can't be caught. When they enter the zone, they have increased fakeout rates on spin/juke/hurdle after the catch.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["HadMadeCatch"], 
-                    deactive: ["NumJukeSuccesses_ThisPlay", "NumSpinSuccesses_ThisPlay", "NumHurdleSuccesses_ThisPlay"] 
-                }, 
-                outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove"]} 
-            },
-	    {
-                id: "GrabAndSmash", name: "Grab And Smash", category: "xf", img: "GrabAndSmash.png", 
-                description: "Not all receivers need fancy footwork. When they enter the zone, they have increased success chance on stiff arm and truck attempts following the catch..",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: ["HadMadeCatch"], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
-            },
-	    {
-                id: "Bottleneck", name: "Bottleneck", category: "xf", img: "Bottleneck.png", 
-                description: "Bottleneck defenders realize that the best way to stop a route is to act early. When they enter the zone, they are highly likely to dominantly win any man press encounter.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["CatchingDef_ChancePressOutcome_DefSuperWin", "CatchingDef_ChancePressDirection_DefenderAlwaysCorrect", "CatchingDef_ChanceCounterOutcome_DefSuperWin", "CatchingDef_ChanceBlockCounterOutcome_OffWin", "CatchingDef_ChanceBlockCounterOutcome_OffSuperWin",]} 
-            },
-	    {
-                id: "Mind Reader", name: "MindReader", category: "xf", img: "MindReader.png", 
-                description: "The best defenders are capable of dismantling an offense like they knew the playcall the whole time. When they enter the zone, they can see offensive play art via coach cam.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Preplay_ShowOffensePlayArt"]} 
-            },
-	    {
                 id: "Phenom", name: "Phenom", category: "xf", img: "Phenom.png", 
                 description: "Some athletes defy classification as much as they defy boundaries. When they enter the zone, they are highly likely to win the first interaction they have with a defender.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
@@ -2345,6 +2192,51 @@ const outputLookup = {
                     deactive: ["NumJukeSuccesses_ThisPlay", "NumSpinSuccesses_ThisPlay", "NumHurdleSuccesses_ThisPlay", "NumStiffArmSuccesses_ThisPlay", "NumTruckSuccesses_ThisPlay", "NumBrokenTackles_ThisPlay"] 
                 }, 
                 outputGroups: { "Output1": ["Running_ChanceFakeSkillMoveOutcome_Fake", "Running_Chance2ManTackleOutcome_Broken_OnFakeoutMove", "Running_ChanceNManTackleOutcome_Broken_OnFakeoutMove", "Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken_OnStrip", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
+            },
+	    {
+                id: "ProReads", name: "Pro Reads", category: "xf", img: "ProReads.png", 
+                description: "For great quarterbacks, vision and anticipation are paramount. When they enter the zone, their first open receiver is highlighted and they ignore defensive pressure.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Passing_PassIcon_HighlightOpenReceiver", "Passing_ChanceImmuneToPressure"]} 
+            },
+	    {
+                id: "RACemUp", name: "RAC 'em Up", category: "xf", img: "RACemUp.png", 
+                description: "RAC receivers fight for every possible yard after making a catch. When they enter the zone, this ability increases their success rate on RAC catches",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChancePressOutcome_OffWin", "Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong", "Catching_ChanceReceiverWinOnCut"],  "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceBlockMpCatchOutcome_Interception", "Catching_ChanceMpCatchWin"],  "Output3": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", 
+"Catching_ChanceDisablePhysicsForceKnockout", "Catching_ChancePressOutcome_OffWin", 
+"Catching_ChancePressOutcome_OffSuperWin", "Catching_ChancePressDirection_DefenderAlwaysWrong"] } 
+            },
+            {
+                id: "Reinforcement", name: "Reinforcement", category: "xf", img: "Reinforcement.png", 
+                description: "The game's top defenders excel in all situations. When they enter the zone, this ability increases their chance of defeating run blocks, and disrupting catches via tackles.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch",
+"CatchingDef_ChanceCatchTackleOutcome_Knockout",
+"BlockingDef_ChanceImpactOutcome_DefWin",
+"BlockingDef_ChanceStandardOutcome_DefWin"]} 
+            },
+	    {
+                id: "Relentless", name: "Relentless", category: "xf", img: "Relentless.png", 
+                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceRushMovesFree"]} 
             },
 	    {
                 id: "Route-Artist", name: "Route Artist", category: "xf", img: "RouteArtist.png", 
@@ -2357,24 +2249,132 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Preplay_EnableCustomHotRoutes"]} 
             },
 	    {
-                id: "Colossus", name: "Colossus", category: "xf", img: "Colossus.png", 
-                description: "Receivers with pure route running are like artists. When in the zone, their route can be built before the snap",
+                id: "Run-&-Gun", name: "Run & Gun", category: "xf", img: "RunAndGun.png", 
+                description: "Many passers use a combination mobility and aggressiveness to make big plays. When they enter the zone, they have perfect accuracy while throwing on the run.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["OnTheRun"], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin"]} 
+                outputGroups: { "Output1": ["Passing_PerfectAccuracy", "Passing_IgnoreOnTheRunThrowPowerPenalties"]} 
             },
 	    {
-                id: "Dual-Threat", name: "Dual Threat", category: "xf", img: "DualThreat.png", 
-                description: "The most devastating defensive players often excel via versatility. When they enter the zone, they have an increased chance of defeating pass blocks, and knocking catches loose.",
+                id: "Run-Stuffer", name: "Run Stuffer", category: "xf", img: "RunStuffer.png", 
+                description: "Run Stuffers can singlehandedly disrupt an offense. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one run blocks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction",
+"BlockingDef_ChanceRunDblTeamOutcome_DefWin",
+"BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Satellite", name: "Satellite", category: "xf", img: "Satellite.png", 
+                description: "Some running backs have the talent to be elite receivers. When they enter the zone, this ability increases their success rate on possession and RAC catches against single coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["RequestedCatchMechanic"], 
+                    deactive: ["IsThrowIntoDoubleCoverage"] 
+                }, 
+                outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts",
+"Catching_ChanceSpCatch",
+"Catching_ChanceDisablePhysicsForceKnockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout",
+"Catching_ChanceBlockMpCatchOutcome_Interception",
+"Catching_ChanceMpCatchWin"]} 
+            }, 
+	    {
+                id: "Selfless", name: "Selfless", category: "xf", img: "Selfless.png", 
+                description: "When Selfless players are making plays their teammates are motivated to perform better. When they enter the zone, all on field teammates enter the zone as well.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Broken", "CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceMidAirOutcome_Knockout"],  "Output2": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"]} 
+                outputGroups: { "Output1": ["General_ForceAllTeammatesInTheZone"]} 
+            },
+	    {
+                id: "Shutdown", name: "Shutdown", category: "xf", img: "Shutdown.png", 
+                description: "Shutdown defenders have the talent to erase receivers from the game. When they enter the zone, their coverage is tighter and interceptions are more frequent on contested catches.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",  "CatchingDef_Def_ChanceDisablePhysicsForceKnockout"]} 
+            },
+	    {
+                id: "Truzz", name: "Truzz", category: "xf", img: "Truzz.png", 
+                description: "The most effective ball carriers prioritize maintaining possession over all else. When they enter the zone, no tackles made against them will result in a fumble.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_ChanceFumbleOutcome_KeepBall"]} 
+            },
+	    {
+                id: "Universal-Coverage", name: "Universal Coverage", category: "xf", img: "UniversalCoverage.png", 
+                description: "The most physical coverage defenders prevent catches from happening even when their target has hands on the ball. When they enter the zone, they are nearly guaranteed knockouts.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout", "CatchingDef_ChanceDefenderWinOnCut", "CatchingDef_ChanceMidAirOutcome_Knockout", "CatchingDef_ChanceMpCatchOutcome_DropKnockout", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
+            },
+	    {
+                id: "Unstoppable-Force", name: "Unstoppable Force", category: "xf", img: "UnstoppableForce.png", 
+                description: "Elite pass rushers are a mix of strength, speed, and tenacity. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one pass blocks.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"], "Output2": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction", "BlockingDef_ChanceRunDblTeamOutcome_DefWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+            },
+	    {
+                id: "Vanguard", name: "Vanguard", category: "xf", img: "Vanguard.png", 
+                description: "Vanguard players are the reason running backs thank their blockers in the postgame interview. When they enter the zone, they are nearly guaranteed dominant impact block wins.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Blocking_ChanceImpactOutcome_OffSuperWin"]} 
+            },
+	    {
+                id: "Wrecking Ball", name: "Wrecking Ball", category: "xf", img: "WreckingBall.png", 
+                description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["PlayInfo_OffenseType", "Gamestyle"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
+            },
+	    {
+                id: "YACEmUp", name: "YAC 'Em Up", category: "xf", img: "YACEmUp.png", 
+                description: "The best physical receivers don't just come down with the ball, they carry it home. When they enter the zone, they are nearly guaranteed to break their first post-catch tackle.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["HadMadeCatch"], 
+                    deactive: ["NumBrokenTackles_ThisPlay"] 
+                }, 
+                outputGroups: { "Output1": ["Running_Chance2ManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken_OnStrip", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnCutStick"]} 
+            },
+	    {
+                id: "Zone-Hawk", name: "Zone Hawk", category: "xf", img: "ZoneHawk.png", 
+                description: "Zone Hawk defenders lock down a part of the field. When they enter the zone, this ability increases the rate of interceptions while in zone coverage.",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: ["ZoneDefender"], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["CatchingDef_ChanceMpCatchOutcome_Interception", "CatchingDef_ChanceMpCatchWin",
+"CatchingDef_Def_ChanceDisablePhysicsForceKnockout",
+"CatchingDef_PlayBall_BreakChance", "CatchingDef_BreakOnThrowTimeReductionPercent"]} 
             }
         ];
 
