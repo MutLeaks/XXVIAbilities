@@ -887,8 +887,8 @@ const outputLookup = {
                 description: "Passers with this ability have perfect accuracy on any high point throws under 20 yards.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsPassTargetWithin20YardsOfQB"], 
-                    deactive: ["IsQBUnderPressure"] 
+                    active: ["IsPassTargetWithin20YardsOfQB", "IsPassWithHighMech"], 
+                    deactive: ["IsQBUnderPressure", "IsPassWithLowMech"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_PerfectAccuracy"]} 
             },
@@ -1233,12 +1233,12 @@ const outputLookup = {
                 outputGroups: { "Output1": ["BlockingDef_ChanceStandardOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction"]} 
             },
 	    {
-                id: "No-Look-Deadeye", name: "No-Look Deadeye", category: "reg", img: "NolookDeadeye.png", 
+                id: "No-Look-Deadeye", name: "No Look Deadeye", category: "reg", img: "NolookDeadeye.png", 
                 description: "Passers with this ability have perfect accuracy on all cross-body throws up to 20 yards (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPassTargetWithin20YardsOfQB"], 
-                    deactive: ["IsPassWithLowMech", "IsQBUnderPressure", "IsThrowToSameSideAsBody"] 
+                    deactive: ["IsPassWithLowMech", "IsPassWithHighMech", "IsQBUnderPressure", "IsThrowToSameSideAsBody"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_IgnoreOnTheRunThrowPowerPenalties", "Passing_PerfectAccuracy"],  "Output2": ["Passing_PassStyle_UseSideArm", "Passing_PassStyle_UseNoLookPasses"]} 
             },
