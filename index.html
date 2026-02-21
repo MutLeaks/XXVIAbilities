@@ -280,7 +280,7 @@ const outputLookup = {
                     active: ["CurrentDown", "DownfieldThrowDistanceFromLOS", "HasMPCatchPositionalAdvantage"], 
                     deactive: ["IsPass25+YardsPastLOS", "IsThrowIntoDoubleCoverage"] 
                 }, 
-                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceBlockCatchTackleOutcome_Knockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch", "Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceMpCatchWin"], "Output3": ["Catching_ChanceMidAirOutcome_Catch"] } 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceBlockCatchTackleOutcome_Knockout"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceMpCatchWin"], "Output3": ["Catching_ChanceMidAirOutcome_Catch"] } 
             },
             { 
                 id: "Acrobat", name: "Acrobat", category: "reg", img: "Acrobat.png", 
@@ -1502,7 +1502,7 @@ const outputLookup = {
                     active: ["HasMPCatchPositionalAdvantage", "IsInRedZone"], 
                     deactive: ["IsThrowIntoDoubleCoverage"] 
                 }, 
-                outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
+                outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceBlockCatchTackleOutcome_Knockout"], "Output2": ["Catching_ChanceMidAirOutcome_Catch"], "Output3": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceMpCatchWin"]} 
             },
 	    {
                 id: "Return-Man", name: "Return Man", category: "reg", img: "returnman.png", 
@@ -2526,7 +2526,7 @@ const outputLookup = {
                                 <div class="gold-text text-[8px] font-black uppercase mb-1 border-b border-zinc-800 pb-0.5">${g}</div>
                                 ${keys.map(k => `
                                     <div onclick="filterByTrait('${k}')" class="group-item cursor-pointer">
-                                        <div class="text-[10px] font-bold uppercase">${outputLookup[k]?.l || k}</div>
+                                        <div class="text-[10px] font-bold ">${outputLookup[k]?.l || k}</div>
                                         <div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div>
                                     </div>`).join('')}
                             </div>`).join('')}
