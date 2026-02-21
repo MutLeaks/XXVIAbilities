@@ -82,7 +82,6 @@ const triggerLookup = {
     "IsCloseGame": { "l": "Is Close Game", "d": "Checks if the score difference is within a narrow margin." },
     "IsDesignedRun": { "l": "Is Designed Run", "d": "Checks if the play is a primary run call, not a QB scramble." },
     "IsDomeGame": { "l": "Is Dome Game", "d": "Checks for controlled stadium environments." },
-    "IsFirstSackAttempt": { "l": "Is First Sack Attempt", "d": "Triggers on the very first attempt to sack the QB during a play." },
     "IsHalfwayThroughFourthQuarter": { "l": "Halfway Through 4th Quarter", "d": "Triggers when the clock is under 7:30 in the 4th quarter." },
     "IsInManDefense": { "l": "Is In Man Defense", "d": "Checks if the defense is currently in man-to-man coverage." },
     "IsInsideRun": { "l": "Is Inside Run", "d": "Checks for runs between the offensive tackles." },
@@ -99,6 +98,7 @@ const triggerLookup = {
     "IsPass19+YardsFromLOS": { "l": "Pass 19+ Yards Past LOS", "d": "Checks if the pass depth is 19 yards or greater." },
     "IsPass25+YardsPastLOS": { "l": "Pass 25+ Yards Past LOS", "d": "Checks if the throw depth exceeds 25 yards past the Line of Scrimmage." },
     "IsPass40+Yards": { "l": "Pass 40+ Yards", "d": "Checks for passes exceeding 40 yards." },
+    "NumSackAttemptsAgainst_ThisPlay": { "l": "Is First Sack Attempt", "d": "Triggers after the first sack attempt/interaction" },
     "IsPassBetween9And21YardsFromLOS": { "l": "Pass Between 9-21 Yards", "d": "Checks for throws in the 9-21 yard depth range." },
     "IsPassingPlay": { "l": "Is Passing Play", "d": "General check for offensive pass play calls." },
     "IsPassPlay": { "l": "Is Pass Play", "d": "Checks if the current offensive action is a pass." },
@@ -307,7 +307,7 @@ const outputLookup = {
                 description: "While in the pocket, passers with this ability are almost guaranteed to evade the first sack attempt by a blitzing defensive back.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsInThePocket", "IsFirstSackAttempt"], 
+                    active: ["IsInThePocket", "NumSackAttemptsAgainst_ThisPlay"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "ALWAYS": ["Passing_AllowAgileBreakSackAnims", "Passing_ChanceBreakSackByDB"]} 
@@ -327,7 +327,7 @@ const outputLookup = {
                 description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by a blitzing defensive back.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsInThePocket", "IsFirstSackAttempt"], 
+                    active: ["IsInThePocket", "NumSackAttemptsAgainst_ThisPlay"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "ALWAYS": ["Passing_AllowPowerBreakSackAnims", "Passing_ChanceBreakSackByDB"]} 
