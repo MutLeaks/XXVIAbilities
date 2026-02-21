@@ -677,7 +677,7 @@ const outputLookup = {
                 description: "Defenders with this ability use faster, more dominant pass rush moves and apply significant QB pressure while rushing from the edge of the defense.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["SnapPosition"], 
+                    active: ["SnapPosition", "EngagedInBlock"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "OUTPUT1": ["BlockingDef_ChanceNonEngDefMoveOutcome_DefWin"], "OUTPUT2": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
@@ -1905,7 +1905,7 @@ const outputLookup = {
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
-                    deactive: [] 
+                    deactive: ["EngagedInBlock"] 
                 }, 
                 outputGroups: { "Output1": ["Defense_PressureDistanceLimit", "Defense_PressurePenaltyMod"]} 
             },
