@@ -566,7 +566,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, inside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
                     deactive: ["IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_DeepInElite"]} 
@@ -586,7 +586,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, outside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsPass19+YardsFromLOS"], 
+                    active: ["GetPlayerYardsPastLOS", "IsPass19+YardsFromLOS"], 
                     deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_DeepOutElite"]} 
@@ -1176,7 +1176,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, inside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
+                    active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
                     deactive: ["IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidInElite"]} 
@@ -1186,7 +1186,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, outside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage"], 
+                    active: ["GetPlayerYardsPastLOS"], 
                     deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidtOutElite"]} 
@@ -1683,7 +1683,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, inside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage", "IsBetweenTheNumbers", "IsThrowTargetInsideNumbers"], 
+                    active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsThrowTargetInsideNumbers"], 
                     deactive: ["IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortInElite"]} 
@@ -1693,7 +1693,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, outside the numbers",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["GetPlayerYardsPastLOS", "HasMPCatchPositionalAdvantage"], 
+                    active: ["GetPlayerYardsPastLOS"], 
                     deactive: ["IsBetweenTheNumbers", "IsThrowIntoDoubleCoverage", "IsThrowTargetInsideNumbers"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortOutElite"]} 
