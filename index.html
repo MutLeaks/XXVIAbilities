@@ -68,11 +68,15 @@ const triggerLookup = {
     "CurrentCutMoveInRoute": { "l": "Current Cut Move In Route", "d": "Identifies the current break or cut in the receiver's route." },
     "CurrentDown": { "l": "Current Down", "d": "Checks the current play's down (1st, 2nd, 3rd, or 4th)." },
     "DownfieldThrowDistanceFromLOS": { "l": "Throw Distance from LOS", "d": "The depth of the pass relative to the Line of Scrimmage." },
+    "ThrowDistance": { "l": "Throw Distance", "d": "Does not strictly activate or deactivate anything; changes the power % increase based on distance of pass." },
     "DownFieldThrowDistanceFromQBUnder40": { "l": "Throw Distance From QB Under 40", "d": "Checks if the throw distance relative to the QB is under 30 yards." },
     "EngagedInBlock": { "l": "Engaged In Block", "d": "Checks if the player is currently in a blocking interaction." },
     "Gamestyle": { "l": "Game Style", "d": "Identifies the current game difficulty or play style (Arcade, Simulation, Competitive)." },
     "GetPlayerStaminaPercent": { "l": "Player Stamina Percent", "d": "Calculates the player's remaining stamina as a percentage." },
+    "GetSpeedPercent": { "l": "Get Speed Percent", "d": "Calculates the percent of max speed the player is moving; trigger activates between 0-%80" },
+    "GetSpeedPercent100%": { "l": "Get Speed Percent", "d": "Calculates the percent of max speed the player is moving; trigger activates at 100% (full-speed)" },
     "GetPlayerYardsPastLOS": { "l": "Player Yards Past LOS", "d": "Measures the exact distance a player has traveled past the Line of Scrimmage." },
+    "CurrentLOS": { "l": "Current Line Of Scrimage", "d": "Activates based on the current location of the LOS." },
     "HadMadeCatch": { "l": "Has Made Catch", "d": "Checks if the receiver has already successfully caught the ball." },
     "HasMPCatchPositionalAdvantage": { "l": "MP Catch Positional Advantage", "d": "Checks if the player has better positioning in a Multi-Player contested catch." },
     "IncorrectGuessOnCommit": { "l": "Incorrect Guess On Commit", "d": "Triggers if the defense guesses the wrong play type." },
@@ -85,7 +89,7 @@ const triggerLookup = {
     "IsHalfwayThroughFourthQuarter": { "l": "Halfway Through 4th Quarter", "d": "Triggers when the clock is under 7:30 in the 4th quarter." },
     "IsInManDefense": { "l": "Is In Man Defense", "d": "Checks if the defense is currently in man-to-man coverage." },
     "IsInsideRun": { "l": "Is Inside Run", "d": "Checks for runs between the offensive tackles." },
-    "IsInRedZone": { "l": "Is In Red Zone", "d": "Checks if the ball is inside the opponent's 20-yard line." },
+    "IsInRedZone": { "l": "Is In Red Zone", "d": "Checks if the LOS is inside the opponent's 30-yard line." },
     "IsInSlot": { "l": "Is In Slot", "d": "Checks if the player is aligned in the slot position." },
     "IsInThePocket": { "l": "Is In The Pocket (QB)", "d": "Checks if the QB is currently within the pass-blocking pocket." },
     "IsInZoneDefense": { "l": "Is In Zone Defense", "d": "Checks if the defense is currently using a zone scheme." },
@@ -163,6 +167,7 @@ const outputLookup = {
 
     // --- PASSING & QB ---
     "Passing_PerfectAccuracy": { l: "Passing_PerfectAccuracy", d: "Guarantees the pass hits the lead point, bypassing RNG/accuracy penalties." },
+    "Passing_PassStrengthMod": { l: "Passing_PassStrengthMod", d: "Increases the strength of the pass. PLE/SFL Version receives a 2% or 5% increase depending on pass distance. Standard Increase Unknown." },
     "Passing_AllowAgileBreakSackAnims": { l: "Passing_AllowAgileBreakSackAnims", d: "Enables mobile-style sack evasion animations." },
     "Passing_AllowPowerBreakSackAnims": { l: "Passing_AllowPowerBreakSackAnims", d: "Enables strength-based animations to break tackle attempts." },
     "Passing_ChanceImmuneToPressure": { l: "Passing_ChanceImmuneToPressure", d: "Nullifies accuracy penalties and 'errant throws' caused by defensive pressure." },
@@ -218,6 +223,7 @@ const outputLookup = {
     "Running_EliteJukeAnims": { l: "Running_EliteJukeAnims", d: "Grants steerable, high-speed juke animations." },
     "Running_EliteSpinAnims": { l: "Running_EliteSpinAnims", d: "Grants steerable, high-speed spin animations." },
     "Tackle_FatigueTargetAfterTackle": { l: "Tackle_FatigueTargetAfterTackle", d: "Drains significant stamina from the ballcarrier after a hit stick." },
+    "Tackle_PhysicsBasedTackleStumbleRecoveryRatePctMod": { l: "Tackle_PhysicsBasedTackleStumbleRecoveryRatePctMod", d: "Increases the stumble recovery rate on physics based tackles by 30%." },
     "Tackle_ResetZoneProgressOnTargetAfterTackle": { l: "Tackle_ResetZoneProgressOnTargetAfterTackle", d: "Clears the opponent's X-Factor/Zone progress after a hit stick." },
     "Tackle_CanHitStickAnyone": { l: "Tackle_CanHitStickAnyone", d: "Allows hit sticks on any runner regardless of size mismatch." },
     "Tackle_FatigueTacklerAfterTackle": { l: "Tackle_FatigueTacklerAfterTackle", d: "Drains stamina from the tackler (Backlash effect)." },
@@ -232,10 +238,12 @@ const outputLookup = {
     "Running_ReplenishStaminaAfterSuccessSkillMove": { l: "Running_ReplenishStaminaAfterSuccessSkillMove", d: "Fully restores stamina after a successful skill move." },
     "Running_PushThePile_AutoWins": { l: "Running_PushThePile_AutoWins", d: "Guarantees success in 'push the pile' situations for extra yardage." },
     "Running_EnableSwerveLoco": { l: "Running_EnableSwerveLoco", d: "Enables high-agility 'swerve' locomotion for ballcarriers." },
+    "Running_SwerveLocoAccelScale": { l: "Running_SwerveLocoAccelScale", d: "Alters the acceleration scale for high-agility 'swerve' locomotion." },
     "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick": { l: "Tackle_Chance2ManTackleOutcome_NotBroken_OnHitStick", d: "Ensures a two-man hit stick tackle successfully downs the runner." },
     "Tackle_HitStickAtDistance": { l: "Tackle_HitStickAtDistance", d: "Allows hit stick attempts from a greater distance." },
-    "Tackle_PerfectTackleTimingFumbleChanceMod": { l: "Tackle_PerfectTackleTimingFumbleChanceMod", d: "Increases fumble probability on perfectly timed tackles." },
-    "Tackle_TimingWindowAdjustmentMod": { l: "Tackle_TimingWindowAdjustmentMod", d: "Widens the successful timing window for tackle attempts." },
+    "Tackle_PerfectTackleTimingFumbleChanceMod10%": { l: "Tackle_PerfectTackleTimingFumbleChanceMod", d: "Increases fumble probability on perfectly timed tackles by 10%." },
+    "Tackle_TimingWindowAdjustmentMod10%": { l: "Tackle_TimingWindowAdjustmentMod", d: "Widens the successful timing window for tackle attempts by 10%." },
+    "Tackle_TimingWindowAdjustmentMod5%": { l: "Tackle_TimingWindowAdjustmentMod", d: "Shrinks the successful timing window for tackle attempts by 5%." },
 
     // --- PRE-PLAY & GENERAL ---
     "Preplay_BackfieldRouteMasterCount": { l: "Preplay_BackfieldRouteMasterCount", d: "Adds 4 unique hot routes for players in the backfield." },
@@ -340,7 +348,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "ALWAYS": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow"]} 
+                outputGroups: { "ALWAYS": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow", "Tackle_TimingWindowAdjustmentMod5%"]} 
             },
 	    {
                 id: "Bogo", name: "Bogo", category: "reg", img: "BOGO.png", 
@@ -430,7 +438,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "ALWAYS": ["Running_NeverStumble"]} 
+                outputGroups: { "ALWAYS": ["Running_NeverStumble", "Tackle_PhysicsBasedTackleStumbleRecoveryRatePctMod"]} 
             },
 	    {
                 id: "Bench-Press", name: "Bench Press", category: "reg", img: "BenchPress.png", 
@@ -450,7 +458,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow", "Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow"]} 
+                outputGroups: { "Output1": ["Running_EliteStiffArmBrokenTackleAnims", "Running_EliteStiffArmMechanicWindow", "Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow", "Tackle_TimingWindowAdjustmentMod5%"]} 
             },
 	    {
                 id: "Bulldozer", name: "Bulldozer", category: "reg", img: "Bulldozer.png", 
@@ -460,7 +468,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow"]} 
+                outputGroups: { "Output1": ["Running_EliteTruckBrokenTackleAnims", "Running_EliteTruckMechanicWindow", "Tackle_TimingWindowAdjustmentMod5%"]} 
             },
 	    {
                 id: "Chuck-Out", name: "Chuck Out", category: "reg", img: "ChuckOut.png", 
@@ -520,7 +528,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure", "Preplay_QbHotRoutesAllowedBeforeSet", "Preplay_QbHotRoutesAllowedPerAnim"]} 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure", "Preplay_QbHotRoutesAllowedBeforeSetTimerMod", "Preplay_QbHotRoutesAllowedBeforeSetNumHotRoutesDuringTimerMod","Preplay_QbHotRoutesAllowedOnAudibleNumHotRoutesDuringTimerMod", "Preplay_QbHotRoutesAllowedOnAudibleTimerMod"]} 
             },
 	    {
                 id: "Crusher", name: "Crusher", category: "reg", img: "Crusher.png", 
@@ -657,7 +665,7 @@ const outputLookup = {
                 description: "Blockers with this ability reduce an edge pass rusher's chances of using a quick block shed move",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["SnapPosition"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "ALWAYS": ["Blocking_ChanceBlockNonEngDefMoveOutcome_DefSuperWin", "Blocking_ChanceIncreaseResistanceOnNonEngagedPassRushMoves"]} 
@@ -750,15 +758,15 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "ALWAYS": ["Tackle_PerfectTackleTimingFumbleChanceMod"]} 
+                outputGroups: { "ALWAYS": ["Tackle_PerfectTackleTimingFumbleChanceMod10%"]} 
             },
 	    {
                 id: "Fastbreak", name: "Fastbreak", category: "reg", img: "FastBreak.png", 
                 description: "Passers with this ability receive better blocking support on designed quarterback run plays.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
-                    deactive: ["IsDesignedRun"] 
+                    active: ["IsDesignedRun"], 
+                    deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Running_PushThePile_AutoWins", "Running_BlockShedInitialTimerPenalty"], "Output2": ["GameModifierAbilities_IgnoreRatingsPenaltiesSpeed", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration"]} 
             },
@@ -767,7 +775,7 @@ const outputLookup = {
                 description: "Passers with this ability are immune to throw penalties caused by defensive pressure while their feet are set in the pocket",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["InThePocket"], 
                     deactive: ["OnTheRun"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_ChanceImmuneToPressure"]} 
@@ -820,7 +828,7 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Tackle_TimingWindowAdjustmentMod"]} 
+                outputGroups: { "Output1": ["Tackle_TimingWindowAdjustmentMod10%"]} 
             },
 	    {
                 id: "Gift-Wrapped", name: "Gift Wrapped", category: "reg", img: "GiftWrapped.png", 
@@ -847,7 +855,7 @@ const outputLookup = {
                 description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks within 5 yards of the goal line.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsOnGoalline"], 
+                    active: ["IsOnGoalline", "IsRunPlay"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["BlockingDef_ChanceStandardOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction"]} 
@@ -877,8 +885,8 @@ const outputLookup = {
                 description: "Passers with this ability are immune to throw penalties caused by defensive pressure while on the run",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
-                    deactive: ["OnTheRun"] 
+                    active: ["OnTheRun"], 
+                    deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Passing_ChanceImmuneToPressure"]} 
             },
@@ -897,7 +905,7 @@ const outputLookup = {
                 description: "When playing at home, players with this ability can easily enter the Zone.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["OnHomeTeam"], 
+                    active: ["OnHomeTeam", "IsAtHomeTeamStadium"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["General_ReduceTriggerRequirements"]} 
@@ -928,9 +936,9 @@ const outputLookup = {
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
-                    deactive: [] 
+                    deactive: ["GetSpeedPercent"] 
                 }, 
-                outputGroups: { "Output1": ["GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesSpeed","Running_EnableSwerveLoco"]} 
+                outputGroups: { "Output1": ["GameModifierAbilities_IgnoreRatingsPenaltiesAcceleration", "GameModifierAbilities_IgnoreRatingsPenaltiesCOD", "GameModifierAbilities_IgnoreRatingsPenaltiesSpeed","Running_EnableSwerveLoco"], "Output2": ["Running_SwerveLocoAccelScale"], "Output3": ["Running_SwerveLocoAccelScale"]} 
             },
 	    {
                 id: "Identifier", name: "Identifier", category: "reg", img: "identifier.png", 
@@ -978,7 +986,7 @@ const outputLookup = {
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInsideRun"], 
-                    deactive: [] 
+                    deactive: ["GetDefensivePlayCommitment"] 
                 }, 
                 outputGroups: { "Output1": ["CatchingDef_ChanceCounterOutcome_DefWin", "BlockingDef_InitialTimerReduction"]} 
             },
@@ -1157,7 +1165,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS", "IsPassBetween9And21YardsFromLOS"], 
+                    active: ["DownfieldThrowDistanceFromLOS", "IsPassBetween9And21YardsFromLOS"], 
                     deactive: ["IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_MidOutElite"]} 
@@ -1194,13 +1202,13 @@ const outputLookup = {
             },
 	    {
                 id: "Mr-Big-Stop", name: "Mr. Big Stop", category: "reg", img: "MrBigStop.png", 
-                description: "Defenders with this ability will start and 3rd or 4th down with at least half of their maximum pass rush points",
+                description: "Defenders with this ability will start 3rd or 4th down with increased fatigue replenishment",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsThirdOrFourthDown"], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Defense_HalfFillMeterOnDowns"]} 
+                outputGroups: { "Output1": ["General_IncreasedFatigueRecoveryRate", "General_DecreasedFatigueDegradationRate"]} 
             },
 	    {
                 id: "Nasty-Streak", name: "Nasty Streak", category: "reg", img: "NastyStreak.png", 
@@ -1228,7 +1236,7 @@ const outputLookup = {
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsOutsideRun"], 
-                    deactive: [] 
+                    deactive: ["GetDefensivePlayCommitment"] 
                 }, 
                 outputGroups: { "Output1": ["BlockingDef_ChanceStandardOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction"]} 
             },
@@ -1247,7 +1255,7 @@ const outputLookup = {
                 description: "Players with this ability can detect user-controlled defenders before the snap, as well as 3rd and 4th down blitzers. Can be bluffed.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["CurrentDown"], 
+                    active: ["CurrentDown", "IsPassPlay"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Preplay_IdDefUser"],  "Output2": ["Preplay_HighlightBlitzersPreSnap"]} 
@@ -1287,7 +1295,7 @@ const outputLookup = {
                 description: "Defenders with this ability are highly likely to force catch knockouts against running backs",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["IsIntendedReceiverRB"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["CatchingDef_ChanceMPCatchWin_AgainstHB"],  "Output1": ["CatchingDef_ChanceBlockCatchTackleOutcome_Catch", "CatchingDef_ChanceCatchTackleOutcome_Knockout",
@@ -1329,8 +1337,8 @@ const outputLookup = {
                 description: "Passers with this ability have increased throw power on bullet precision passes (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsBulletPass", "IsQBLeadingPass"], 
-                    deactive: [] 
+                    active: ["ThrowDistance", "IsQBLeadingPass"], 
+                    deactive: ["IsSkillBasedPassingEnabled"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_PassStrengthMod"], "Output2": ["AIHint_Ability_PassLeadElite"]} 
             },
@@ -1419,7 +1427,7 @@ const outputLookup = {
                 description: "Blockers with this ability will frequently attempt and win pull blocks",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["IsPullLeadBlocker"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Always": ["Blocking_AlwaysImpactBlock", "Blocking_ChanceImpactOutcomeVersusDB_OffWin", "Blocking_ChanceImpactOutcomeVersusLB_OffWin"]} 
@@ -1482,14 +1490,14 @@ const outputLookup = {
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Always": ["General_DecreasedFatigueDegradationRate", "General_IncreasedFatigueRecoveryRate"]} 
+                outputGroups: { "Always": ["General_IncreasedFatigueRecoveryRate", "General_DecreasedFatigueDegradationRate", "General_WearAndTearFasterRecoveryRate", "General_WearAndTearHealthDeductionModifier"]} 
             },
 	    {
                 id: "Red-Zone-Deadeye", name: "Red Zone Deadeye", category: "reg", img: "RedZoneDeadeye.png", 
                 description: "Passers with this ability have perfect accuracy on all unpressured throws inside the red zone (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsThrowToSameSideAsBody"], 
+                    active: ["IsThrowToSameSideAsBody", "CurrentLOS"], 
                     deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun", "PlayerVelocityDirection"] 
                 }, 
                 outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
@@ -1509,7 +1517,7 @@ const outputLookup = {
                 description: "Ballcarriers with this ability have an increased chance to break the first tackle attempt on kick returns",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["IsKickReturn"], 
                     deactive: ["NumBrokenTacklesThisPlay"] 
                 }, 
                 outputGroups: { "Always": ["Catching_ChanceSpCatch", "Running_Chance2ManTackleOutcome_Broken", "Running_Chance2ManTackleOutcome_Broken_OnCutStick", "Running_Chance2ManTackleOutcome_Broken_OnHitStick", "Running_Chance2ManTackleOutcome_Broken_OnStrip", "Running_ChanceNManTackleOutcome_Broken", "Running_ChanceNManTackleOutcome_Broken_OnStrip"]} 
@@ -1549,8 +1557,8 @@ const outputLookup = {
                 description: "Receivers with this ability have a high success rate when creating separation on the last cut of any route.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["CurrentCutMoveInRoute"], 
-                    deactive: ["TotalCutMovesInRoute"] 
+                    active: [], 
+                    deactive: [] 
                 }, 
                 outputGroups: { "Always": ["Catching_ChanceCounterOutcome_OffWin", "Catching_ChanceReceiverWinOnCut"]} 
             },
@@ -1654,8 +1662,8 @@ const outputLookup = {
                 description: "Passers with this ability have increased throw power on bullet precision passes made while their feet are set (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsPassWithBulletSpeed", "IsQBLeadingPass"], 
-                    deactive: ["OnTheRun"] 
+                    active: ["ThrowDistance", "IsQBLeadingPass"], 
+                    deactive: ["OnTheRun", "IsSkillBasedPassingEnabled"] 
                 }, 
                 outputGroups: { "Output1": ["Passing_PassStrengthMod"]} 
             },
@@ -1664,7 +1672,7 @@ const outputLookup = {
                 description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS"], 
+                    active: ["DownfieldThrowDistanceFromLOS"], 
                     deactive: ["IsPass11+YardsPastLOS", "IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceToStack"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceSpCatch"], "Output3": ["Catching_ChanceReceiverWinOnCut"], "Output4": ["AIHint_Ability_ShortInElite"], "Output5": ["AIHint_Ability_ShortOutElite"]} 
@@ -1730,12 +1738,12 @@ const outputLookup = {
                 outputGroups: { "Output1": ["GameModifierAbilities_PreventHotRoutesFailed", "GameModifierAbilities_PreventHotRoutesIncorrect", "Preplay_SlotRouteMasterCount"]} 
             },
 	    {
-                id: "Slot-O-Matic", name: "Slot-O-Matic", category: "reg", img: "SlotOMatic.png", 
+                id: "Slot-O-Matic", name: "Slot O Matic", category: "reg", img: "SlotOMatic.png", 
                 description: "When lined up in the slot, receivers with this ability make faster cuts and have better hands when catching passes less than 10 yards from the LoS",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["CurrentCutMoveInRoute", "IsInSlot"], 
-                    deactive: ["IsPass11+YardsPastLOS", "TotalCutMovesInRoute"] 
+                    active: ["IsInSlot"], 
+                    deactive: ["IsPass11+YardsPastLOS"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceReceiverWinOnCutOneDef", "Catching_ChanceSpCatch"]} 
             },
@@ -1774,7 +1782,7 @@ const outputLookup = {
                 description: "Ballcarriers with this ability retain more of their forward momentum during tackles while travelling at high speeds.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["GetSpeedPercent100%"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Tackle_PhysicsBasedTacklePathResistance"]} 
@@ -1884,7 +1892,7 @@ const outputLookup = {
                 description: "Ballcarriers with this ability are effective at recovering from attempted tackles regardless of their current stamina.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsRunPlay"], 
+                    active: [], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Tackle_PhysicsBasedTackleIgnoreStaminaForRecovery"]} 
@@ -1954,7 +1962,7 @@ const outputLookup = {
                 description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks over 45 yards.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: [], 
+                    active: ["CurrentLOS"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Preplay_KickMeterFixedSpeed_AccuracyTimer", "Preplay_KickMeterFixedSpeed_PowerTimer"]} 
