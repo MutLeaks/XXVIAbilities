@@ -89,7 +89,8 @@ const triggerLookup = {
     "IsHalfwayThroughFourthQuarter": { "l": "Halfway Through 4th Quarter", "d": "Triggers when the clock is under 7:30 in the 4th quarter." },
     "IsInManDefense": { "l": "Is In Man Defense", "d": "Checks if the defense is currently in man-to-man coverage." },
     "IsInsideRun": { "l": "Is Inside Run", "d": "Checks for runs between the offensive tackles." },
-    "IsInRedZone": { "l": "Is In Red Zone", "d": "Checks if the LOS is inside the opponent's 30-yard line." },
+    "IsInRedZone": { "l": "Is In Red Zone (30Y)", "d": "Checks if the LOS is inside the opponent's 30-yard line." },
+    "IsInRedzone2": { "l": "Is In Red Zone (20Y)", "d": "Checks if the LOS is inside the opponent's 20-yard line." },
     "IsInSlot": { "l": "Is In Slot", "d": "Checks if the player is aligned in the slot position." },
     "IsInThePocket": { "l": "Is In The Pocket (QB)", "d": "Checks if the QB is currently within the pass-blocking pocket." },
     "IsInZoneDefense": { "l": "Is In Zone Defense", "d": "Checks if the defense is currently using a zone scheme." },
@@ -286,7 +287,7 @@ const outputLookup = {
                 description: "On 3rd down, receivers with this ability have a better chance to win contested catches against single coverage up to 25 yards from the line of scrimmage.",
                 xLink: "https://www.mut.gg/abilities/3rd-down-threat/",
                 triggers: { 
-                    active: ["CurrentDown", "DownfieldThrowDistanceFromLOS", "HasMPCatchPositionalAdvantage"], 
+                    active: ["CurrentDown", "HasMPCatchPositionalAdvantage"], 
                     deactive: ["IsPass25+YardsPastLOS", "IsThrowIntoDoubleCoverage"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceSpCatch", "Catching_ChanceBlockCatchTackleOutcome_Knockout"], "Output2": ["Catching_ChanceBlockMpCatchOutcome_DropKnockout", "Catching_ChanceMpCatchWin"], "Output3": ["Catching_ChanceMidAirOutcome_Catch"] } 
@@ -1498,7 +1499,7 @@ const outputLookup = {
                 description: "Passers with this ability have perfect accuracy on all unpressured throws inside the red zone (except on high/low throws).",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsThrowToSameSideAsBody", "CurrentLOS"], 
+                    active: ["IsThrowToSameSideAsBody", "IsInRedzone2"], 
                     deactive: ["IsPassWithHighMech", "IsPassWithLowMech", "IsQBUnderPressure", "OnTheRun", "PlayerVelocityDirection"] 
                 }, 
                 outputGroups: { "Always": ["Passing_PerfectAccuracy"]} 
