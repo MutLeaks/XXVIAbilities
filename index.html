@@ -115,6 +115,7 @@ const triggerLookup = {
     "IsPTMNGLocoActive": { "l": "Locomotion Active", "d": "Checks if the player's locomotion or movement ability is currently active." },
     "IsQBLeadingPass": { "l": "Is QB Leading Pass", "d": "Checks if the user is using the stick to lead the receiver." },
     "IsQBUnderPressure": { "l": "Is QB Under Pressure", "d": "Checks if nearby defenders are applying a pressure penalty to the QB." },
+    "IsQbUnderPressureOrResistingPressure": { "l": "Is QB Under Pressure or Resisting Pressure", "d": "Checks if nearby defenders are applying pressure, or attempting to apply pressure (stacks w/ fearless) to the QB." },
     "IsRACCatch": { "l": "Is RAC Catch", "d": "Checks if the receiver uses the 'Run After Catch' mechanic." },
     "IsRunPlay": { "l": "Is Run Play", "d": "General check for offensive run play calls." },
     "IsScreenPass": { "l": "Is Screen Pass", "d": "Checks if the play is a screen (HB, WR, or TE)." },
@@ -167,7 +168,7 @@ const outputLookup = {
 
     // --- PASSING & QB ---
     "Passing_PerfectAccuracy": { l: "Passing_PerfectAccuracy", d: "Guarantees the pass hits the lead point, bypassing RNG/accuracy penalties." },
-    "Passing_PassStrengthMod": { l: "Passing_PassStrengthMod", d: "Increases the strength of the pass. PLE/SFL Version receives a 2% or 5% increase depending on pass distance. Standard Increase Unknown." },
+    "Passing_PassStrengthMod": { l: "Passing_PassStrengthMod", d: "Increases the strength of the pass. PLE/SFL Version receives a 2% base increase by default; upto 5% increase at 36+yard pass distance. (% boost scales to distance)" },
     "Passing_AllowAgileBreakSackAnims": { l: "Passing_AllowAgileBreakSackAnims", d: "Enables mobile-style sack evasion animations." },
     "Passing_AllowPowerBreakSackAnims": { l: "Passing_AllowPowerBreakSackAnims", d: "Enables strength-based animations to break tackle attempts." },
     "Passing_ChanceImmuneToPressure": { l: "Passing_ChanceImmuneToPressure", d: "Nullifies accuracy penalties and 'errant throws' caused by defensive pressure." },
@@ -1002,7 +1003,7 @@ const outputLookup = {
             },
 	    {
                 id: "Interior-Threat", name: "Interior Threat", category: "reg", img: "interiorthreat.png", 
-                description: "Defenders with this ability are refunded a pass rush point when they successfully shed blocks",
+                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the interior of the defensive line.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -1447,7 +1448,7 @@ const outputLookup = {
                 description: "Passers with this ability have faster passing animations when they are throwing under pressure",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["IsQBUnderPressure"], 
+                    active: ["IsQbUnderPressureOrResistingPressure"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Always": ["Passing_ExtraDistanceBeforeHailMaryPassAnim", "Passing_PassSpeedMod", "Passing_PassStrengthMod"]} 
@@ -1962,7 +1963,7 @@ const outputLookup = {
                 description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks over 45 yards.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
-                    active: ["CurrentLOS"], 
+                    active: ["IsKickOver45Yards"], 
                     deactive: [] 
                 }, 
                 outputGroups: { "Output1": ["Preplay_KickMeterFixedSpeed_AccuracyTimer", "Preplay_KickMeterFixedSpeed_PowerTimer"]} 
@@ -2039,13 +2040,13 @@ const outputLookup = {
             },
 	    {
                 id: "Colossus", name: "Colossus", category: "xf", img: "Colossus.png", 
-                description: "Receivers with pure route running are like artists. When in the zone, their route can be built before the snap",
+                description: "Raw power can often be a pass rusher's greatest weapon. When these players enter the zone, this ability increases their win rate and block shed speed even vs. double team blocks.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin"]} 
+                outputGroups: { "Always": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceDefPassDblTeamOutcome_DefWin"]} 
             },
 	    {
                 id: "Dots", name: "Dots", category: "xf", img: "Dots.png", 
@@ -2274,7 +2275,7 @@ const outputLookup = {
                     active: ["PlayInfo_OffenseType"], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction",
+                outputGroups: { "AnyRunPlay": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction",
 "BlockingDef_ChanceRunDblTeamOutcome_DefWin",
 "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
             },
@@ -2340,7 +2341,7 @@ const outputLookup = {
                     active: ["PlayInfo_OffenseType"], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"], "Output2": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction", "BlockingDef_ChanceRunDblTeamOutcome_DefWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
+                outputGroups: { "AnyPassingPlay": ["BlockingDef_ChanceDefMoveOutcome_DefWin", "BlockingDef_ChanceDefMoveOutcome_DefSuperWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffWin", "BlockingDef_ChanceBlockDefMoveOutcome_OffSuperWin", "BlockingDef_ChanceUpgradeDefWinToSuper_DefensiveMove", "BlockingDef_ChanceNonEngDefMoveOutcome_DefWin", "BlockingDef_ChanceNonEngDefMoveOutcome_DefSuperWin"], "Always": ["BlockingDef_ChanceImpactOutcome_DefSuperWin", "BlockingDef_InitialTimerReduction", "BlockingDef_ChanceRunDblTeamOutcome_DefWin", "BlockingDef_ChanceStandardOutcome_DefSuperWin"]} 
             },
 	    {
                 id: "Vanguard", name: "Vanguard", category: "xf", img: "Vanguard.png", 
@@ -2354,11 +2355,11 @@ const outputLookup = {
             },
 	    {
                 id: "Wrecking Ball", name: "Wrecking Ball", category: "xf", img: "WreckingBall.png", 
-                description: "Some players thrive on making defenders look silly. When they enter the zone, this ability increases their fakeout rate on the next juke, spin or hurdle.",
+                description: "Wrecking Ball runners don't avoid contact. They create it. When they enter the zone, players with this ability will always break tackles during the next 3 stiff arm or trucks.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType", "Gamestyle"], 
-                    deactive: [] 
+                    deactive: ["HasWon3Moves"] 
                 }, 
                 outputGroups: { "Output1": ["Running_StiffArmAlwaysBreaksTackleIfDefTackleRatingIsUnderValue", "Running_TruckAlwaysBreaksTackleIfDefTackleRatingIsUnderValue"]} 
             },
