@@ -61,6 +61,14 @@
     </div>
 
     <script>
+const getOutputCount = (targetKey) => {
+    return abilities.filter(a => {
+        // Get all output keys across all groups (Output1, ALWAYS, etc.) for this ability
+        const allKeys = Object.values(a.outputGroups || {}).flat();
+        return allKeys.includes(targetKey);
+    }).length;
+};
+
         const iconPath = "Assets/AbilityIcons/"; 
 const triggerLookup = {
     "ActiveTackleType": { "l": "Active Tackle Type", "d": "Identifies the specific tackle mechanic being executed." },
@@ -923,16 +931,6 @@ const outputLookup = {
                 outputGroups: { "Output1": ["Blocking_ChanceImpactOutcomeVersusDB_OffWin"]} 
             },
 	    {
-                id: "Hot-Route-Master", name: "Honorary Lineman", category: "reg", img: "HotRouteMaster.png", 
-                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments.",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure", "Preplay_QBRouteMasterCount"]} 
-            },
-	    {
                 id: "Human-Joystick", name: "Human Joystick", category: "reg", img: "HumanJoyStick.png", 
                 description: "Ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
@@ -1114,13 +1112,13 @@ const outputLookup = {
             },
 	    {
                 id: "Master-Tactician", name: "Master Tactician", category: "reg", img: "mastertactician.png", 
-                description: "Passers with this ability have access to four extra hot routes during pre-play adjustments, make hot routes faster, and receive more immediate playmaker reactions from WRs.",
+                description: "Passers with this ability make hot routes faster, and receive more immediate playmaker reactions from WRs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "Output1": ["Preplay_QBRouteMasterCount", "GameModifierAbilities_PreventAudibleFailure"],  "Output2": ["Passing_ChanceQBCanUseFastDirect"],  "Output3": ["Preplay_QbHotRoutesAllowedBeforeSet", "Preplay_QbHotRoutesAllowedPerAnim", "GameModifierAbilities_PreventAudibleFailure"]} 
+                outputGroups: { "Output1": ["GameModifierAbilities_PreventAudibleFailure"],  "Output2": ["Passing_ChanceQBCanUseFastDirect"],  "Output3": ["Preplay_QbHotRoutesAllowedBeforeSet", "Preplay_QbHotRoutesAllowedPerAnim", "GameModifierAbilities_PreventAudibleFailure"]} 
             },
 	    {
                 id: "Matador", name: "Matador", category: "reg", img: "Matador.png", 
@@ -2526,8 +2524,11 @@ const outputLookup = {
                                 <div class="gold-text text-[8px] font-black uppercase mb-1 border-b border-zinc-800 pb-0.5">${g}</div>
                                 ${keys.map(k => `
                                     <div onclick="filterByTrait('${k}')" class="group-item cursor-pointer">
-                                        <div class="text-[10px] font-bold ">${outputLookup[k]?.l || k}</div>
-                                        <div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div>
+<div class="flex justify-between items-end">
+    <div class="text-[10px] font-bold ">${outputLookup[k]?.l || k}</div>
+    <div class="gold-text font-black text-[9px] mb-[1px]">♻️ ${getOutputCount(k)}</div>
+</div>
+<div class="text-[8px] text-zinc-500 leading-none">${outputLookup[k]?.d || ''}</div>
                                     </div>`).join('')}
                             </div>`).join('')}
                     </div>`;
