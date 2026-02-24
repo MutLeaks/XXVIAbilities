@@ -177,7 +177,7 @@ const outputLookup = {
 
     // --- PASSING & QB ---
     "Passing_PerfectAccuracy": { l: "Passing_PerfectAccuracy", d: "Guarantees the pass hits the lead point, bypassing RNG/accuracy penalties." },
-    "Passing_PassStrengthMod": { l: "Passing_PassStrengthMod", d: "Increases the strength of the pass. PLE/SFL Version receives a 2% base increase by default; upto 5% increase at 36+yard pass distance. (% boost scales to distance)" },
+    "Passing_PassStrengthMod": { l: "Passing_PassStrengthMod", d: "Increases the strength of the pass.)" },
     "Passing_AllowAgileBreakSackAnims": { l: "Passing_AllowAgileBreakSackAnims", d: "Enables mobile-style sack evasion animations." },
     "Passing_AllowPowerBreakSackAnims": { l: "Passing_AllowPowerBreakSackAnims", d: "Enables strength-based animations to break tackle attempts." },
     "Passing_ChanceImmuneToPressure": { l: "Passing_ChanceImmuneToPressure", d: "Nullifies accuracy penalties and 'errant throws' caused by defensive pressure." },
@@ -245,7 +245,7 @@ const outputLookup = {
     "Running_ChanceNManTackleOutcome_Broken_OnStrip": { l: "Running_ChanceNManTackleOutcome_Broken_OnStrip", d: "High success rate to break a multi-man tackle during a strip attempt." },
     "Running_Chance2ManTackleOutcome_Broken_OnHitStick": { l: "Running_Chance2ManTackleOutcome_Broken_OnHitStick", d: "High success rate to break a 2-man tackle during a hit stick." },
     "Running_Chance2ManTackleOutcome_Broken_OnCutStick": { l: "Running_Chance2ManTackleOutcome_Broken_OnCutStick", d: "High success rate to break a 2-man tackle during a cut stick." },
-    "Running_ReplenishStaminaAfterSuccessSkillMove": { l: "Running_ReplenishStaminaAfterSuccessSkillMove", d: "Fully restores stamina after a successful skill move." },
+    "Running_ReplenishStaminaAfterSuccessSkillMove": { l: "Running_ReplenishStaminaAfterSuccessSkillMove", d: "Restores stamina after a sucessful skill move." },
     "Running_PushThePile_AutoWins": { l: "Running_PushThePile_AutoWins", d: "Guarantees success in 'push the pile' situations for extra yardage." },
     "Running_EnableSwerveLoco": { l: "Running_EnableSwerveLoco", d: "Enables high-agility 'swerve' locomotion for ballcarriers." },
     "Running_SwerveLocoAccelScale": { l: "Running_SwerveLocoAccelScale", d: "Alters the acceleration scale for high-agility 'swerve' locomotion." },
@@ -292,7 +292,7 @@ const outputLookup = {
         const abilities = [
             { 
                 id: "3rd-down-threat", name: "3rd Down Threat", category: "reg", img: "3rdDownThreat.png", 
-                description: "On 3rd down, receivers with this ability have a better chance to win contested catches against single coverage up to 25 yards from the line of scrimmage.",
+                description: "On 3rd down, receivers with this ability have a better chance to win contested catches against single coverage up to 25 yards from the line of scrimmage. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd-down-threat/",
                 triggers: { 
                     active: ["CurrentDown", "HasMPCatchPositionalAdvantage"], 
@@ -302,7 +302,7 @@ const outputLookup = {
             },
             { 
                 id: "Acrobat", name: "Acrobat", category: "reg", img: "Acrobat.png", 
-                description: "Players with this ability are more likely to succeed at and attempt diving catches and swats.",
+                description: "Players with this ability are more likely to succeed at and attempt diving catches and swats. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -312,17 +312,17 @@ const outputLookup = {
             },
 	    {
                 id: "Adrenaline-Rush", name: "Adrenaline Rush", category: "reg", img: "AdrenalineRush.png", 
-                description: "Pass rushers with this ability will have all of their pass rush move points restored after sacking the QB",
+                description: "Pass rushers with this ability will have all of their pass rush move points restored after sacking the QB. Restores 50 stamina on sack",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
                     deactive: [] 
                 }, 
-                outputGroups: { "ALWAYS": ["Defense_SackRestorePassRushPoints"]} 
+                outputGroups: { "ALWAYS": ["Defense_SackRestoreFatigue"]} 
             },
 	    {
                 id: "Agile-Extender", name: "Agile Extender", category: "reg", img: "AgileExtender.png", 
-                description: "While in the pocket, passers with this ability are almost guaranteed to evade the first sack attempt by a blitzing defensive back.",
+                description: "While in the pocket, passers with this ability are almost guaranteed to evade the first sack attempt by a blitzing defensive back. 50% chance to break sack by DB",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInThePocket", "NumSackAttemptsAgainst_ThisPlay"], 
@@ -342,7 +342,7 @@ const outputLookup = {
             },
 	    {
                 id: "Anchored-Extender", name: "Anchored Extender", category: "reg", img: "AnchoredExtenter.png", 
-                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by a blitzing defensive back.",
+                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by a blitzing defensive back.  50% chance to break sack by DB",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInThePocket", "NumSackAttemptsAgainst_ThisPlay"], 
@@ -382,7 +382,7 @@ const outputLookup = {
             },
 	    {
                 id: "Backfield-Mismatch", name: "Backfield Mismatch", category: "reg", img: "BackfieldMismatch.png", 
-                description: "Running backs with this ability have better catch in traffic and route running when coming out of the backfield against linebackers and linemen.",
+                description: "Running backs with this ability have better catch in traffic and route running when coming out of the backfield against linebackers and linemen. 100% chance winoncut vs low rated non-db; 50% chance all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsLinedUpInBackfield"], 
@@ -392,7 +392,7 @@ const outputLookup = {
             },
 	    {
                 id: "Backlash", name: "Backlash", category: "reg", img: "Backlash.png", 
-                description: "Ballcarriers with this ability will cause increased fatigue penalties against their tackler when tackled via a non-conservative tackle.",
+                description: "Ballcarriers with this ability will cause increased fatigue penalties against their tackler when tackled via a non-conservative tackle.  10 stamina reducion applied to tackler",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -452,7 +452,7 @@ const outputLookup = {
             },
 	    {
                 id: "Bench-Press", name: "Bench Press", category: "reg", img: "BenchPress.png", 
-                description: "Defenders with this ability apply bonus fatigue to their man coverage target after a successful press win",
+                description: "Defenders with this ability apply bonus fatigue to their man coverage target after a successful press win. 10 stamina reducion applied to press target",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPassingPlay"], 
@@ -482,7 +482,7 @@ const outputLookup = {
             },
 	    {
                 id: "Chuck-Out", name: "Chuck Out", category: "reg", img: "ChuckOut.png", 
-                description: "Defenders with this ability apply bonus fatigue to their target after a successful zone chuck.",
+                description: "Defenders with this ability apply bonus fatigue to their target after a successful zone chuck. 10 stamina reducion applied to chuck target",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPassPlay"], 
@@ -542,7 +542,7 @@ const outputLookup = {
             },
 	    {
                 id: "Crusher", name: "Crusher", category: "reg", img: "Crusher.png", 
-                description: "Defenders with this ability will cause heavy fatigue penalties when tackling a ballcarrier with a hit-stick tackle.",
+                description: "Defenders with this ability will cause heavy fatigue penalties when tackling a ballcarrier with a hit-stick tackle. 22 fatigue penalty to target on tackle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["ActiveTackleType", "RequestedTackleMechanic"], 
@@ -562,7 +562,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-Elite", name: "Deep Elite", category: "reg", img: "deepelite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS.",
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["DownfieldThrowDistanceFromLOS", "GetPlayerYardsPastLOS", "IsPass19+YardsFromLOS"], 
@@ -572,7 +572,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-In-Elite", name: "Deep In Elite", category: "reg", img: "DeepInElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, inside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, inside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
@@ -582,7 +582,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-In-Zone-KO", name: "Deep In Zone KO", category: "reg", img: "DeepInZoneKO.png", 
-                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and inside the numbers.",
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and inside the numbers. 100% playball chance, 100% break on throw time reduction percent, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "IsThrowTargetInsideNumbers"], 
@@ -592,7 +592,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-Out-Elite", name: "Deep Out Elite", category: "reg", img: "DeepOutElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, outside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes 20+ yards from the LoS, outside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS", "IsPass19+YardsFromLOS"], 
@@ -602,7 +602,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-Out-Zone-KO", name: "Deep Out Zone KO", category: "reg", img: "DeepOutZoneKO.png", 
-                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and outside the hash marks.",
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS and outside the hash marks. 100% playball chance, 100% break on throw time reduction percent, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "IsThrowTargetOutsideHashmarks"], 
@@ -612,7 +612,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-Route-KO", name: "Deep Route KO", category: "reg", img: "DeepRouteKO.png", 
-                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus deep routes 20+ yards from the LoS.",
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus deep routes 20+ yards from the LoS. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInManDefense", "IsPass19+YardsFromLOS"], 
@@ -622,7 +622,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deep-Zone-KO", name: "Deep Zone KO", category: "reg", img: "deepzoneko.png", 
-                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS.",
+                description: "Defenders with this ability force more catch knockouts and react quicker in deep zone coverage, 20+ yards from the LoS. 100% playball chance, 100% break on throw time reduction percent, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInZoneDefense", "IsPass19+YardsFromLOS", "DownfieldThrowDistanceFromLOS"], 
@@ -642,7 +642,7 @@ const outputLookup = {
             },
 	    {
                 id: "Deflator", name: "Deflator", category: "reg", img: "Deflator.png", 
-                description: "Defenders with this ability will cause increased fatigue penalties when tackling a ballcarrier with a non-conservative tackle.",
+                description: "Defenders with this ability will cause increased fatigue penalties when tackling a ballcarrier with a non-conservative tackle. 12.5 fatigue penalty applied to ballcarrier on tackle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -662,7 +662,7 @@ const outputLookup = {
             },
 	    {
                 id: "Double-Or-Nothing", name: "Double Or Nothing", category: "reg", img: "DoubleOrNothing.png", 
-                description: "Pass rushers with this ability must spend double the pass rush points to perform a move but are granted dominant wins",
+                description: "Pass rushers with this ability must spend double the pass rush points to perform a move but are granted dominant wins. 200% stamina scalar; 100% chance to upgrade defensive win to super on defensive moves.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -672,7 +672,7 @@ const outputLookup = {
             },
 	    {
                 id: "Edge-Protector", name: "Edge Protector", category: "reg", img: "edgeprotector.png", 
-                description: "Blockers with this ability reduce an edge pass rusher's chances of using a quick block shed move",
+                description: "Blockers with this ability reduce an edge pass rusher's chances of using a quick block shed move. 100% chance to increase resistance on non engaged moves; 50% to block non engaged defensive superwin.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -682,7 +682,7 @@ const outputLookup = {
             },
 	    {
                 id: "Edge-Threat", name: "Edge Threat", category: "reg", img: "EdgeThreat.png", 
-                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the edge of the defense.",
+                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the edge of the defense. 50% chance for non engaged defensive move to standard defensive win.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -692,7 +692,7 @@ const outputLookup = {
             },
 	    {
                 id: "Edge-Threat-Elite", name: "Edge Threat Elite", category: "reg", img: "EdgeThreatElite.png", 
-                description: "Defenders with this ability use faster, more dominant pass rush moves and apply significant QB pressure while rushing from the edge of the defense.",
+                description: "Defenders with this ability use faster, more dominant pass rush moves and apply significant QB pressure from a further distance while rushing from the edge of the defense. Pressure distance increased to 3.75 yards, pressure penalty increased by 50%, 50% chance for non engaged defensive move to standard defensive win..",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -702,7 +702,7 @@ const outputLookup = {
             },
 	    {
                 id: "El-Toro", name: "El Toro", category: "reg", img: "ElToro.png", 
-                description: "Defenders with this ability will receive dominant bull rush wins when their pass rush points are full. This consumes an additional point",
+                description: "Defenders with this ability will receive dominant bull rush wins when their pass rush points are full. This consumes an additional point. 200% stamina scalar; 50% chance of bull rush max points superwin.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [""], 
@@ -712,7 +712,7 @@ const outputLookup = {
             },
 	    {
                 id: "Energizer", name: "Energizer", category: "reg", img: "Energizer.png", 
-                description: "Ballcarriers with this ability will replenish a portion of their stamina upon successfully performing any skill move",
+                description: "Ballcarriers with this ability will replenish a portion of their stamina upon successfully performing any skill move. Restores 25 stamina",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -722,7 +722,7 @@ const outputLookup = {
             },
 	    {
                 id: "Enforcer", name: "Enforcer", category: "reg", img: "Enforcer.png", 
-                description: "Defenders with this ability don't allow broken tackles when hit-sticking ballcarriers - regardless of the runner's size or power.",
+                description: "Defenders with this ability don't allow broken tackles when hit-sticking ballcarriers - regardless of the runner's size or power. 50% chance of not broken on 2man tackle hitstick.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -732,7 +732,7 @@ const outputLookup = {
             },
 	    {
                 id: "Enforcer-Supreme", name: "Enforcer Supreme", category: "reg", img: "enforcersupreme.png", 
-                description: "Defenders with this ability don't allow broken tackles, cause heavy fatigue penalties, and will clear a ballcarrier's progress towards entering the zone when landing a hit-stick.",
+                description: "Defenders with this ability don't allow broken tackles, cause heavy fatigue penalties, and will clear a ballcarrier's progress towards entering the zone when landing a hit-stick. 22 fatigue penalty to target on tackle. 50% chance not broken on hitstick during 2man tackle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["ActiveTackleType", "RequestedTackleMechanic"], 
@@ -752,7 +752,7 @@ const outputLookup = {
             },
 	    {
                 id: "Extra-Credit", name: "Extra Credit", category: "reg", img: "ExtraCredit.png", 
-                description: "Pass rushers with this ability are granted an additional maximum pass rush move point",
+                description: "Pass rushers with this ability pay a reduced stamina cost for each move they attempt. All pass rush moves consume 20% less stamina",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -772,7 +772,7 @@ const outputLookup = {
             },
 	    {
                 id: "Fastbreak", name: "Fastbreak", category: "reg", img: "FastBreak.png", 
-                description: "Passers with this ability receive better blocking support on designed quarterback run plays.",
+                description: "Passers with this ability receive better blocking support on designed quarterback run plays. .50 blockshed initial timer penalty",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsDesignedRun"], 
@@ -782,7 +782,7 @@ const outputLookup = {
             },
 	    {
                 id: "Fearless", name: "Fearless", category: "reg", img: "fearless.png", 
-                description: "Passers with this ability are immune to throw penalties caused by defensive pressure while their feet are set in the pocket",
+                description: "Passers with this ability have a reduced chance to be impacted by throw penalties caused by defensive pressure while their feet are set in the pocket. 50% chance to be immune to pressure.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["InThePocket"], 
@@ -802,7 +802,7 @@ const outputLookup = {
             },
 	    {
                 id: "Flat-Zone-KO", name: "Flat Zone KO", category: "reg", img: "FlatZoneKO.png", 
-                description: "Defenders with this ability force more catch knockouts and react quicker in any flat zone coverage, less than 10 yards from the LoS and outside the hash marks.",
+                description: "Defenders with this ability force more catch knockouts and react quicker in any flat zone coverage, less than 10 yards from the LoS and outside the hash marks. 100% playball chance, 100% break on throw time reduction percent, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInZoneDefense", "IsThrowTargetOutsideHashmarks", "DownfieldThrowDistanceFromLOS"], 
@@ -812,7 +812,7 @@ const outputLookup = {
             },
 	    {
                 id: "Focused-Kicker", name: "Focused Kicker", category: "reg", img: "FocusedKicker.png", 
-                description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks up to 45 yards.",
+                description: "Kickers with this ability experience a slower kicking meter for better power and accuracy on kicks up to 45 yards. 30% speed reduction to the accuracy timer; power timer uses fixed (slower) speed.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsKick45YardsOrLess"], 
@@ -822,7 +822,7 @@ const outputLookup = {
             },
 	    {
                 id: "Fool-Me-Once", name: "Fool Me Once", category: "reg", img: "FoolMeOnce.png", 
-                description: "Blockers with this ability gain blocker resistance points as a faster rate",
+                description: "Blockers with this ability gain blocker resistance points as a faster rate. 100% chance to double resistance on loss against pass rushers.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -842,7 +842,7 @@ const outputLookup = {
             },
 	    {
                 id: "Gift-Wrapped", name: "Gift Wrapped", category: "reg", img: "GiftWrapped.png", 
-                description: "Passers with this ability have a better chance to complete passes to uncovered receivers.",
+                description: "Passers with this ability have a better chance to complete passes to uncovered receivers. 100% chance for gift catch to WR, TE, WR.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -852,7 +852,7 @@ const outputLookup = {
             },
 	    {
                 id: "Goal-Line-Back", name: "Goal Line Back", category: "reg", img: "goallineback.png", 
-                description: "Running Backs with this ability receive improved blocking from their O-Line within 5 yards of the end zone",
+                description: "Running Backs with this ability receive improved blocking from their O-Line within 5 yards of the end zone. .50 blockshed initial timer penalty",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsRunPlay", "IsWithinGoalLine"], 
@@ -862,7 +862,7 @@ const outputLookup = {
             },
 	    {
                 id: "Goal-Line-Stuff", name: "Goal Line Stuff", category: "reg", img: "GoalLineStuff.png", 
-                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks within 5 yards of the goal line.",
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks within 5 yards of the goal line. .95 initial timer reduction; 50% chance to super win on standard interactions.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsOnGoalline", "IsRunPlay"], 
@@ -872,7 +872,7 @@ const outputLookup = {
             },
 	    {
                 id: "Grab-N-Go", name: "Grab N Go", category: "reg", img: "GrabNGo.png", 
-                description: "After securing a RAC catch, ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed.",
+                description: "After securing a RAC catch, ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed. 50% chance of sp catch; 100% chance of perfect lead.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsRACCatch"], 
@@ -882,7 +882,7 @@ const outputLookup = {
             },
 	    {
                 id: "Gunslinger", name: "Gunslinger", category: "reg", img: "Gunslinger.png", 
-                description: "QB has increased pass anim speed and a larger threshold before using the long hail mary windup animation",
+                description: "QB has increased pass anim speed and a longer distance before using the long hail mary windup animation. Max pass distance before hail mary animation increased by 10 yards. Pass speed increased by 15%.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -892,7 +892,7 @@ const outputLookup = {
             },
 	    {
                 id: "Gutsy-Scrambler", name: "Gutsy Scrambler", category: "reg", img: "GutsyScrambler.png", 
-                description: "Passers with this ability are immune to throw penalties caused by defensive pressure while on the run",
+                description: "Passers with this ability are immune to throw penalties caused by defensive pressure while on the run.  50% chance to be immune to pressure.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["OnTheRun"], 
@@ -922,7 +922,7 @@ const outputLookup = {
             },
 	    {
                 id: "Honorary-Lineman", name: "Honorary Lineman", category: "reg", img: "HonoraryLineman.png", 
-                description: "Players with this ability will frequently win impact blocks against defensive backs.",
+                description: "Players with this ability will frequently win impact blocks against defensive backs. 50% chance to standard win impact block against DB.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -932,7 +932,7 @@ const outputLookup = {
             },
 	    {
                 id: "Human-Joystick", name: "Human Joystick", category: "reg", img: "HumanJoyStick.png", 
-                description: "Ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed.",
+                description: "Ballcarriers with this ability can quickly shift momentum, change direction, and turn the corner without sacrificing speed. The swerve loco accel scale (outputs 2 and 3) increases by 15% or 35% depending on the deactivation condition.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -972,7 +972,7 @@ const outputLookup = {
             },
 	    {
                 id: "Inside-Shade", name: "Inside Shade", category: "reg", img: "insideshade.png", 
-                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and inside the numbers",
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and inside the numbers. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsBetweenTheNumbers", "IsInManDefense"], 
@@ -982,7 +982,7 @@ const outputLookup = {
             },
 	    {
                 id: "Inside-Stuff", name: "Inside Stuff", category: "reg", img: "InsideStuff.png", 
-                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against inside run plays.",
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against inside run plays. .95 initial timer reduction; 50% chance to standard win on counter interactions.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInsideRun"], 
@@ -992,7 +992,7 @@ const outputLookup = {
             },
 	    {
                 id: "Instant-Rebate", name: "Instant Rebate", category: "reg", img: "instantrebate.png", 
-                description: "Defenders with this ability are refunded a pass rush point when they successfully shed blocks",
+                description: "Defenders with this ability are refunded a pass rush point when they successfully shed blocks. 100% chance for shedding a block to restore stamina.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1002,7 +1002,7 @@ const outputLookup = {
             },
 	    {
                 id: "Interior-Threat", name: "Interior Threat", category: "reg", img: "interiorthreat.png", 
-                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the interior of the defensive line.",
+                description: "Defenders with this ability use faster, more dominant pass rush moves while rushing from the interior of the defensive line. 50% chance to win non engaged moves.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -1012,7 +1012,7 @@ const outputLookup = {
             },
 	    {
                 id: "Ironman", name: "Ironman", category: "reg", img: "ironman.png", 
-                description: "Players with this ability avoid any ratings penalties associated with playing outside of their primary position",
+                description: "Players with this ability avoid any ratings penalties associated with playing outside of their primary position. 100% chance to ignore OOP penalty.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1032,7 +1032,7 @@ const outputLookup = {
             },
 	    {
                 id: "Leap-Frog", name: "Leap Frog", category: "reg", img: "LeapFrog.png", 
-                description: "Ballcarriers with this ability will hold onto the ball if tackled during a hurdle",
+                description: "Ballcarriers with this ability will hold onto the ball if tackled during a hurdle. 100% chance to prevent fumble during hurdle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1042,7 +1042,7 @@ const outputLookup = {
             },
 	    {
                 id: "Lifeguard", name: "Lifeguard", category: "reg", img: "Lifeguard.png", 
-                description: "Blockers with this ability defend against swim/club pass rush moves as if they had an additional resistance point",
+                description: "Blockers with this ability defend against swim/club pass rush moves as if they had an additional resistance point. 100% chance to increase resistance on club and swim moves.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1052,7 +1052,7 @@ const outputLookup = {
             },
 	    {
                 id: "Linchpin", name: "Linchpin", category: "reg", img: "linchpin.png", 
-                description: "Players with this ability grant improved blocking to the entire offensive line.",
+                description: "Players with this ability grant improved blocking to the entire offensive line. .40 blockshed initial timer penalty",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1082,7 +1082,7 @@ const outputLookup = {
             },
 	    {
                 id: "Lumberjack", name: "Lumberjack", category: "reg", img: "Lumberjack.png", 
-                description: "Defenders with this ability do not allow broken tackles and cause more fumbles when cut-sticking ballcarriers.",
+                description: "Defenders with this ability do not allow broken tackles and cause more fumbles when cut-sticking ballcarriers. 50% chance not broken on cutstick.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1092,7 +1092,7 @@ const outputLookup = {
             },
 	    {
                 id: "Lurk-Artist", name: "Lurk Artist", category: "reg", img: "lurkartist.png", 
-                description: "Defenders with this ability can make jumping, 180-degree INTs while lurking in a zone in the middle of the field, have a greater INT rate, and don't tire after INTs.",
+                description: "Defenders with this ability can make jumping, 180-degree INTs while lurking in a zone in the middle of the field, have a greater INT rate, and don't tire after INTs. 100% chance to jump high; 50% chance on all other outputs",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1102,7 +1102,7 @@ const outputLookup = {
             },
 	    {
                 id: "Lurker", name: "Lurker", category: "reg", img: "lurker.png", 
-                description: "Defenders with this ability can make jumping, 180-degree interceptions while lurking in a zone in the middle of the field.",
+                description: "Defenders with this ability can make jumping, 180-degree interceptions while lurking in a zone in the middle of the field. 100% chance to jump high.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1111,8 +1111,18 @@ const outputLookup = {
                 outputGroups: { "Output1": ["CatchingDef_ChanceToHighJump"]} 
             },
 	    {
+                id: "Max-Effort", name: "MaxEffort", category: "reg", img: "MaxEffort.png", 
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting pass rush moves with effort. 100% to ignore resistance on speed rush",
+                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
+                triggers: { 
+                    active: [], 
+                    deactive: [] 
+                }, 
+                outputGroups: { "Output1": ["Defense_ChanceNoResistanceOnSpeedRush"]} 
+            },
+	    {
                 id: "Master-Tactician", name: "Master Tactician", category: "reg", img: "mastertactician.png", 
-                description: "Passers with this ability make hot routes faster, and receive more immediate playmaker reactions from WRs.",
+                description: "Passers with this ability make hot routes faster, and receive more immediate playmaker reactions from WRs. 100% chance can use fast direct.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1122,7 +1132,7 @@ const outputLookup = {
             },
 	    {
                 id: "Matador", name: "Matador", category: "reg", img: "Matador.png", 
-                description: "Blockers with this ability have stronger protection against dominant bull rush moves attempted by defenders",
+                description: "Blockers with this ability have stronger protection against dominant bull rush moves attempted by defenders. 50% chance to block bull rush superwin",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1132,7 +1142,7 @@ const outputLookup = {
             },
 	    {
                 id: "Matchup-Nightmare", name: "Matchup Nightmare", category: "reg", img: "MatchupNightmare.png", 
-                description: "Receivers with this ability make sharper cuts and frequently win contested catches when covered by linebackers and linemen.",
+                description: "Receivers with this ability make sharper cuts and frequently win contested catches when covered by linebackers and linemen. 100% chance winoncut vs low rated non-db; 50% chance all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1142,7 +1152,7 @@ const outputLookup = {
             },
 	    {
                 id: "Medium-Route-KO", name: "Medium Route KO", category: "reg", img: "MediumRouteKO.png", 
-                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS.",
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInManDefense", "IsPassBetween9And21YardsFromLOS"], 
@@ -1152,7 +1162,7 @@ const outputLookup = {
             },
 	    {
                 id: "Menace", name: "Menace", category: "reg", img: "menace.png", 
-                description: "Defenders with this ability play more powerful catch tackles that force more knockouts and cause increased fatigue penalties on Perfect catch tackles",
+                description: "Defenders with this ability play more powerful catch tackles that force more knockouts and cause increased fatigue penalties on Perfect catch tackles. 50% chance perfect catch tackle outcome knockout, 15 stamina reduction applied to tackle target after perfect catch tackle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1162,7 +1172,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mid-Elite", name: "Mid Elite", category: "reg", img: "midelite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS.",
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["DownfieldThrowDistanceFromLOS", "IsPassBetween9And21YardsFromLOS"], 
@@ -1172,7 +1182,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mid-In-Elite", name: "Mid In Elite", category: "reg", img: "MidInElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, inside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, inside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
@@ -1182,7 +1192,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mid-Out-Elite", name: "Mid Out Elite", category: "reg", img: "MidOutElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, outside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes 10-20 yards from the LoS, outside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS"], 
@@ -1192,7 +1202,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mid-Zone-KO", name: "Mid Zone KO", category: "reg", img: "MidZoneKO.png", 
-                description: "Defenders with this ability force more catch knockouts and react quicker in any mid-field zone coverage, less than 20 yards from the LoS inside the numbers and 10-20 outside.",
+                description: "Defenders with this ability force more catch knockouts and react quicker in any mid-field zone coverage, less than 20 yards from the LoS inside the numbers and 10-20 outside. 100% playball chance, 100% break on throw time reduction percent, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInZoneDefense", "IsPassBetween9And21YardsFromLOS", "IsThrowTargetInsideNumbers"], 
@@ -1202,7 +1212,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mr-Big-Stop", name: "Mr. Big Stop", category: "reg", img: "MrBigStop.png", 
-                description: "Defenders with this ability will start 3rd or 4th down with increased fatigue replenishment",
+                description: "Defenders with this ability will start 3rd or 4th down with increased fatigue replenishment. .75 increased fatigue recovery rate; .35 decreased fatigue degradation rate",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsThirdOrFourthDown"], 
@@ -1212,7 +1222,7 @@ const outputLookup = {
             },
 	    {
                 id: "Nasty-Streak", name: "Nasty Streak", category: "reg", img: "NastyStreak.png", 
-                description: "Blockers with this ability will frequently attempt and win impact blocks against linebackers and defensive backs when playing as a lineman or fullback.",
+                description: "Blockers with this ability will frequently attempt and win impact blocks against linebackers and defensive backs when playing as a lineman or fullback. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["SnapPosition"], 
@@ -1232,7 +1242,7 @@ const outputLookup = {
             },
 	    {
                 id: "No-Outsiders", name: "No Outsiders", category: "reg", img: "NoOutsiders.png", 
-                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against outside zone plays.",
+                description: "Defenders with this ability use faster run shed moves for a better chance at shedding blocks against outside zone plays.  .95 initial timer reduction; 50% chance to super win on standard interactions.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsOutsideRun"], 
@@ -1272,7 +1282,7 @@ const outputLookup = {
             },
 	    {
                 id: "One-Step-Ahead", name: "One Step Ahead", category: "reg", img: "OneStepAhead.png", 
-                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage",
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInManDefense"], 
@@ -1282,7 +1292,7 @@ const outputLookup = {
             },
 	    {
                 id: "Out-My-Way", name: "Out My Way", category: "reg", img: "OutMyWay.png", 
-                description: "Defenders with this ability will frequently attempt and win impact blocks against receivers, tight ends, and running backs.",
+                description: "Defenders with this ability will frequently attempt and win impact blocks against receivers, tight ends, and running backs. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1292,7 +1302,7 @@ const outputLookup = {
             },
 	    {
                 id: "Outmatched", name: "Outmatched", category: "reg", img: "Outmatched.png", 
-                description: "Defenders with this ability are highly likely to force catch knockouts against running backs",
+                description: "Defenders with this ability are highly likely to force catch knockouts against running backs. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsIntendedReceiverRB"], 
@@ -1314,7 +1324,7 @@ const outputLookup = {
             },
 	    {
                 id: "Outside-Shade", name: "Outside Shade", category: "reg", img: "outsideshade.png", 
-                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and outside the numbers",
+                description: "Defenders with this ability generally react much faster to receiver cut moves when in man coverage and outside the numbers. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInManDefense"], 
@@ -1324,7 +1334,7 @@ const outputLookup = {
             },
 	    {
                 id: "Pass-Commited", name: "Pass Commited", category: "reg", img: "setfeetlead.png", 
-                description: "Defenders with this ability will win pass blocks when they correctly use the Guess Play adjustment to predict a pass. Incorrect guesses will result in a loss.",
+                description: "Defenders with this ability will win pass blocks when they correctly use the Guess Play adjustment to predict a pass. Incorrect guesses will result in a loss. 100% chance for all relevant outputs on win or loss.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["CorrectGuessOnCommit"], 
@@ -1344,7 +1354,7 @@ const outputLookup = {
             },
 	    {
                 id: "Pass-Protector", name: "Pass Protector", category: "reg", img: "PassProtector.png", 
-                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while pass blocking.",
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while pass blocking. 1.0 secure pass blocker initial timer; 50% chance all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPassPlay"], 
@@ -1364,7 +1374,7 @@ const outputLookup = {
             },
 	    {
                 id: "Pick Artist", name: "Pick Artist", category: "reg", img: "PickArtist.png", 
-                description: "Defenders with this ability have higher chance to catch uncontested interceptions, and they have unlimited stamina on the return (until using a special move or breaking a tackle).",
+                description: "Defenders with this ability have higher chance to catch uncontested interceptions, and they have unlimited stamina on the return (until using a special move or breaking a tackle). 50% chance to singleplayer catch; 50% chance to disable physics force knockouts.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1374,7 +1384,7 @@ const outputLookup = {
             },
 	    {
                 id: "Playmaker", name: "Playmaker", category: "reg", img: "playmaker.png", 
-                description: "Receivers with this ability will immediately and precisely react to a user's playmaker inputs.",
+                description: "Receivers with this ability will immediately and precisely react to a user's playmaker inputs. 100% chance for fast direct.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1394,7 +1404,7 @@ const outputLookup = {
             },
 	    {
                 id: "Post-Up", name: "Post Up", category: "reg", img: "PostUp.png", 
-                description: "Blockers with this ability are almost guaranteed to win any double team block they are engaged in",
+                description: "Blockers with this ability are almost guaranteed to win any double team block they are engaged in. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1414,7 +1424,7 @@ const outputLookup = {
             },
 	    {
                 id: "Protected", name: "Protected", category: "reg", img: "Protected.png", 
-                description: "Passers with this ability receive better pass blocking from their offensive linemen.",
+                description: "Passers with this ability receive better pass blocking from their offensive linemen. 1.0 pocket degration timer reduction.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPassingPlay"], 
@@ -1424,7 +1434,7 @@ const outputLookup = {
             },
 	    {
                 id: "Puller-Elite", name: "Puller Elite", category: "reg", img: "PullerElite.png", 
-                description: "Blockers with this ability will frequently attempt and win pull blocks",
+                description: "Blockers with this ability will frequently attempt and win pull blocks. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsPullLeadBlocker"], 
@@ -1434,7 +1444,7 @@ const outputLookup = {
             },
 	    {
                 id: "QB-Playmaker", name: "QB Playmaker", category: "reg", img: "playmaker.png", 
-                description: "Passers with this ability can elicit immediate and precise playmaker reactions from any receiver.",
+                description: "Passers with this ability can elicit immediate and precise playmaker reactions from any receiver. 100% chance to use fast direct.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1444,7 +1454,7 @@ const outputLookup = {
             },
 	    {
                 id: "Quick-Draw", name: "Quick Draw", category: "reg", img: "QuickDraw.png", 
-                description: "Passers with this ability have faster passing animations when they are throwing under pressure",
+                description: "Passers with this ability have faster, stronger passing animations and a longer distance before using the long hail mary windup animation when they are throwing under pressure. Max pass distance before hail mary animation increased by 10 yards. Pass speed increased by 10%; pass stregnth increased by 30%.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsQbUnderPressureOrResistingPressure"], 
@@ -1464,7 +1474,7 @@ const outputLookup = {
             },
 	    {
                 id: "Reach-Elite", name: "Reach Elite", category: "reg", img: "ReachElite.png", 
-                description: "Defenders with this ability can reach out of engaged blocks to tackle or sack nearby ballcarriers.",
+                description: "Defenders with this ability can reach out of engaged blocks to tackle or sack nearby ballcarriers. 100% chance to reach sack, 100% chance to reach tackle.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1474,7 +1484,7 @@ const outputLookup = {
             },
 	    {
                 id: "Reach-For-It", name: "Reach For It", category: "reg", img: "ReachForIt.png", 
-                description: "Ballcarriers with this ability will frequently attempt to gain extra yards while being tackled",
+                description: "Ballcarriers with this ability will frequently attempt to gain extra yards while being tackled. 100% chance for locator based tackle offensive wins.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1504,7 +1514,7 @@ const outputLookup = {
             },
 	    {
                 id: "Red-Zone-Threat", name: "Red Zone Threat", category: "reg", img: "RedZoneThreat.png", 
-                description: "When in the red zone, receivers with this ability have a better chance to win contested catches against single coverage.",
+                description: "When in the red zone, receivers with this ability have a better chance to win contested catches against single coverage.  50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["HasMPCatchPositionalAdvantage", "IsInRedZone"], 
@@ -1514,7 +1524,7 @@ const outputLookup = {
             },
 	    {
                 id: "Return-Man", name: "Return Man", category: "reg", img: "returnman.png", 
-                description: "Ballcarriers with this ability have an increased chance to break the first tackle attempt on kick returns",
+                description: "Ballcarriers with this ability have an increased chance to break the first tackle attempt on kick returns. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsKickReturn"], 
@@ -1524,7 +1534,7 @@ const outputLookup = {
             },
 	    {
                 id: "Ripper", name: "Ripper", category: "reg", img: "Ripper.png", 
-                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting rip pass rush moves",
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting rip pass rush moves. 100% chance no resistance on rip",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1554,7 +1564,7 @@ const outputLookup = {
             },
 	    {
                 id: "Route-Technician", name: "Route Technician", category: "reg", img: "RouteTechnician.png", 
-                description: "Receivers with this ability have a high success rate when creating separation on the last cut of any route.",
+                description: "Receivers with this ability have a high success rate when creating separation on the last cut of any route. 50% chance to win on cut; 50% chance counter outcome off win.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1564,7 +1574,7 @@ const outputLookup = {
             },
 	    {
                 id: "Run-Committed", name: "Run Committed", category: "reg", img: "RunCommitted.png", 
-                description: "Defenders with this ability will dominantly win run blocks when they correctly use the Guess Play adjustment to predict a run. Incorrect guesses will result in a loss.",
+                description: "Defenders with this ability will dominantly win run blocks when they correctly use the Guess Play adjustment to predict a run. Incorrect guesses will result in a loss. 100% chance for all relevant outputs on win or loss.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["CorrectGuessOnCommit"], 
@@ -1574,7 +1584,7 @@ const outputLookup = {
             },
 	    {
                 id: "Run-Protector", name: "Run Protector", category: "reg", img: "runprotector.png", 
-                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while run blocking.",
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move while run blocking. 1.0 secure pass blocker initial timer; 50% chance all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsRunPlay"], 
@@ -1584,7 +1594,7 @@ const outputLookup = {
             },
 	    {
                 id: "Run-Stopper", name: "Run Stopper", category: "reg", img: "RunStopper.png", 
-                description: "Defenders with this ability do not need to spend a point on shed attempts during a run play",
+                description: "Defenders with this ability do not need to spend stamina on shed attempts during a run play. 100% chance for free shed attempts.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsRunPlay"], 
@@ -1604,7 +1614,7 @@ const outputLookup = {
             },
 	    {
                 id: "Safety-Valve", name: "Safety Valve", category: "reg", img: "SafetyValve.png", 
-                description: "Passers with this ability improve the catching prowess of all running backs who are open on pass plays.",
+                description: "Passers with this ability improve the catching prowess of all running backs who are open on pass plays. 100% chance for gift catch from RB.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1614,7 +1624,7 @@ const outputLookup = {
             },
 	    {
                 id: "Screen-Protector", name: "Screen Protector", category: "reg", img: "ScreenProtector.png", 
-                description: "Blockers with this ability will dominantly win impact blocks on screen plays",
+                description: "Blockers with this ability will dominantly win impact blocks on screen plays. 100% chance to upgrade offensive wins on impact blocks to superwins.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsScreenPass"], 
@@ -1624,7 +1634,7 @@ const outputLookup = {
             },
 	    {
                 id: "Second-Wind", name: "Second Wind", category: "reg", img: "SecondWind.png", 
-                description: "Players with this ability have a chance to replenish their stamina, once per play, when it is half depleted",
+                description: "Players with this ability have a chance to replenish their stamina, once per play, when it is half depleted. 50% stamina to trigger, 50% replenishment chance",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1634,7 +1644,7 @@ const outputLookup = {
             },
 	    {
                 id: "Secure-Protector", name: "Secure Protector", category: "reg", img: "SecureProtector.png", 
-                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move.",
+                description: "Blockers with this ability reduce a rusher's chances of using a quick block shed move. 1.0 initial timer; 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1647,7 +1657,7 @@ const outputLookup = {
             },
 	    {
                 id: "Secure-Tackler", name: "Secure Tackler", category: "reg", img: "SecureTackler.png", 
-                description: "Defenders with this ability have an increased success rate when using conservative or diving tackles.",
+                description: "Defenders with this ability have an increased success rate when using conservative or diving tackles. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["ActiveTackleType", "RequestedTackleMechanic"], 
@@ -1669,7 +1679,7 @@ const outputLookup = {
             },
 	    {
                 id: "Short-Elite", name: "Short Elite", category: "reg", img: "shortelite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS.",
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["DownfieldThrowDistanceFromLOS"], 
@@ -1679,7 +1689,7 @@ const outputLookup = {
             },
 	    {
                 id: "Short-In-Elite", name: "Short In Elite", category: "reg", img: "ShortInElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, inside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, inside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS", "IsBetweenTheNumbers", "IsThrowTargetInsideNumbers"], 
@@ -1689,7 +1699,7 @@ const outputLookup = {
             },
 	    {
                 id: "Short-Out-Elite", name: "Short Out Elite", category: "reg", img: "ShortOutElite.png", 
-                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, outside the numbers",
+                description: "Receivers with this ability catch more consistently while catching passes less than 10 yards from the LoS, outside the numbers. 100% chance to stack, 50% chance on all other outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerYardsPastLOS"], 
@@ -1699,7 +1709,7 @@ const outputLookup = {
             },
 	    {
                 id: "Short-Route-KO", name: "Short Route KO", category: "reg", img: "ShortRouteKO.png", 
-                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS.",
+                description: "Defenders with this ability force more catch tackle knockouts in man-to-man versus medium routes, 10-20 yards from the LoS. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInManDefense"], 
@@ -1719,7 +1729,7 @@ const outputLookup = {
             },
 	    {
                 id: "Sleight-of-Hand", name: "Sleight of Hand", category: "reg", img: "SleightOfHand.png", 
-                description: "Passers with this ability have an increased success rate when using pump fakes on double-move routes against zone coverage.",
+                description: "Passers with this ability have an increased success rate when using pump fakes on double-move routes against zone coverage. 50% fakeout chance, 50% fakeout jump chance",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1739,23 +1749,13 @@ const outputLookup = {
             },
 	    {
                 id: "Slot-O-Matic", name: "Slot O Matic", category: "reg", img: "SlotOMatic.png", 
-                description: "When lined up in the slot, receivers with this ability make faster cuts and have better hands when catching passes less than 10 yards from the LoS",
+                description: "When lined up in the slot, receivers with this ability make faster cuts and have better hands when catching passes less than 10 yards from the LoS. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["IsInSlot"], 
                     deactive: ["IsPass11+YardsPastLOS"] 
                 }, 
                 outputGroups: { "Output1": ["Catching_ChanceBlockCatchTackleOutcome_Knockout", "Catching_ChanceDisablePostCatchKnockouts", "Catching_ChanceReceiverWinOnCutOneDef", "Catching_ChanceSpCatch"]} 
-            },
-	    {
-                id: "Speedster", name: "Speedster", category: "reg", img: "Speedster.png", 
-                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting speed pass rush moves",
-                xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
-                triggers: { 
-                    active: [], 
-                    deactive: [] 
-                }, 
-                outputGroups: { "Output1": ["Defense_ChanceNoResistanceOnSpeedRush"]} 
             },
 	    {
                 id: "Spin-Cycle", name: "Spin Cycle", category: "reg", img: "spincycle.png", 
@@ -1769,7 +1769,7 @@ const outputLookup = {
             },
 	    {
                 id: "Spinner", name: "Spinner", category: "reg", img: "Spinner.png", 
-                description: "Ballcarriers with this ability have steerable spin animations.",
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting spin pass rush moves. 100% chance for no resistance on spin.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1789,7 +1789,7 @@ const outputLookup = {
             },
 	    {
                 id: "Stonewall", name: "Stonewall", category: "reg", img: "Stonewall.png", 
-                description: "Defenders with this ability will frequently prevent additional yardage gains while tackling",
+                description: "Defenders with this ability will frequently prevent additional yardage gains while tackling. 100% chance for locator based tackle defensive win.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1799,7 +1799,7 @@ const outputLookup = {
             },
 	    {
                 id: "Strip-Specialist", name: "Strip Specialist", category: "reg", img: "StripSpecialist.png", 
-                description: "Defenders with this ability can still tackle effectively while trying to strip the football",
+                description: "Defenders with this ability can still tackle effectively while trying to strip the football. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1809,7 +1809,7 @@ const outputLookup = {
             },
 	    {
                 id: "Swim-Club", name: "Swim Club", category: "reg", img: "SwimClub.png", 
-                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting swim/club pass rush moves",
+                description: "Defenders with this ability will ignore one bar of blocker resistance when attempting swim/club pass rush moves. 100% chance no resistance on club or swim moves.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1819,7 +1819,7 @@ const outputLookup = {
             },
 	    {
                 id: "Tackle-Supreme", name: "Tackle Supreme", category: "reg", img: "TackleSupreme.png", 
-                description: "Defenders with this ability have better conservative/dive tackling, are rarely faked out by ballcarrier moves, and cannot be faked out when user-controlled.",
+                description: "Defenders with this ability have better conservative/dive tackling, are rarely faked out by ballcarrier moves, and cannot be faked out when user-controlled. 50% chance on all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["ActiveTackleType", "RequestedTackleMechanic"], 
@@ -1829,7 +1829,7 @@ const outputLookup = {
             },
 	    {
                 id: "Tank", name: "Tank", category: "reg", img: "Tank.png", 
-                description: "Ballcarriers with this ability will break almost any hit-stick tackle attempts made on them.",
+                description: "Ballcarriers with this ability will break almost any hit-stick tackle attempts made on them. 50% chance 2man broken on hitstick",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1849,7 +1849,7 @@ const outputLookup = {
             },
 	    {
                 id: "Tear Proof", name: "Tear Proof", category: "reg", img: "TearProof.png", 
-                description: "Blockers with this ability defend against rip pass rush moves as if they had an additional resistance point",
+                description: "Blockers with this ability defend against rip pass rush moves as if they had an additional resistance point. 100% chance to increase resistance on rip moves.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1869,7 +1869,7 @@ const outputLookup = {
             },
 	    {
                 id: "Tight-Out", name: "Tight Out", category: "reg", img: "TightOut.png", 
-                description: "Passers with this ability improve the catching prowess of all tight ends who are open on pass plays.",
+                description: "Passers with this ability improve the catching prowess of all tight ends who are open on pass plays. 100% chance for gift catch.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1879,7 +1879,7 @@ const outputLookup = {
             },
 	    {
                 id: "Tip-Drill", name: "Tip Drill", category: "reg", img: "TipDrill.png", 
-                description: "Players with this ability have an increased chance to catch passes that have been tipped into the air.",
+                description: "Players with this ability have an increased chance to catch passes that have been tipped into the air. 100 bonus to tipball catch chance",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1909,7 +1909,7 @@ const outputLookup = {
             },
 	    {
                 id: "Under-Pressure", name: "Under Pressure", category: "reg", img: "UnderPressure.png", 
-                description: "Defenders with this ability can apply pressure to the quarterback from a greater distance.",
+                description: "Defenders with this ability can apply heavier pressure to the quarterback from a greater distance. Pressure distance increased to 3.75 yards, pressure penalty increased by 50%.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1919,7 +1919,7 @@ const outputLookup = {
             },
 	    {
                 id: "Unfakeable", name: "Unfakeable", category: "reg", img: "Unfakeable.png", 
-                description: "Defenders with this ability are rarely faked out by ballcarrier moves (and cannot be faked out when user-controlled).",
+                description: "Defenders with this ability are rarely faked out by ballcarrier moves (and cannot be faked out when user-controlled). 50% chance all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1929,7 +1929,7 @@ const outputLookup = {
             },
 	    {
                 id: "Unpredictable", name: "Unpredictable", category: "reg", img: "Unpredictable.png", 
-                description: "Defenders with this ability are less likely to increase their blocker's resistance bars when performing shed wins",
+                description: "Defenders with this ability are less likely to increase their blocker's resistance bars when performing shed wins. 50% chance for opposing blocker no resistance.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1939,7 +1939,7 @@ const outputLookup = {
             },
 	    {
                 id: "Unspun", name: "Unspun", category: "reg", img: "Unspun.png", 
-                description: "Blockers with this ability defend against spin pass rush moves as if they had an additional resistance point",
+                description: "Blockers with this ability defend against spin pass rush moves as if they had an additional resistance point. 100% chance for increased resistance on spin",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1969,7 +1969,7 @@ const outputLookup = {
             },
 	    {
                 id: "Ankle-Breaker", name: "Ankle Breaker", category: "xf", img: "AnkleBreaker.png", 
-                description: "Truly devastating receiving threats are the ones that catch and can't be caught. When they enter the zone, they have increased fakeout rates on spin/juke/hurdle after the catch.",
+                description: "Truly devastating receiving threats are the ones that catch and can't be caught. When they enter the zone, they have increased fakeout rates on spin/juke/hurdle after the catch. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["HadMadeCatch"], 
@@ -1979,7 +1979,7 @@ const outputLookup = {
             },
 	    {
                 id: "Avalanche", name: "Avalanche", category: "xf", img: "Avalanche.png", 
-                description: "There are tacklers and then there are these guys. When they enter the zone any successful hit-stick  made while running towards the line of scrimmage will result in a fumble.",
+                description: "There are tacklers and then there are these guys. When they enter the zone any successful hit-stick  made while running towards the line of scrimmage will result in a fumble. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -1989,7 +1989,7 @@ const outputLookup = {
             },
 	    {
                 id: "Bazooka", name: "Bazooka", category: "xf", img: "Bazooka.png", 
-                description: "Quarterbacks with generational arms have the power to stretch any defense to its breaking point. When they enter the zone, their maximum throw distance is increased.",
+                description: "Quarterbacks with generational arms have the power to stretch any defense to its breaking point. When they enter the zone, their maximum throw distance is increased. Max throw distance increased to 83 yards; max distance before hailmary increased by 50 yards.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2019,7 +2019,7 @@ const outputLookup = {
             },
 	    {
                 id: "Bottleneck", name: "Bottleneck", category: "xf", img: "Bottleneck.png", 
-                description: "Bottleneck defenders realize that the best way to stop a route is to act early. When they enter the zone, they are highly likely to dominantly win any man press encounter.",
+                description: "Bottleneck defenders realize that the best way to stop a route is to act early. When they enter the zone, they are highly likely to dominantly win any man press encounter. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2029,7 +2029,7 @@ const outputLookup = {
             },
 	    {
                 id: "Brick-Wall", name: "Brick Wall", category: "xf", img: "BrickWall.png", 
-                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by any blitzing defender",
+                description: "While in the pocket, passers with this ability are almost guaranteed to break the first sack attempt by any blitzing defender. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType", "InThePocket"], 
@@ -2039,7 +2039,7 @@ const outputLookup = {
             },
 	    {
                 id: "Colossus", name: "Colossus", category: "xf", img: "Colossus.png", 
-                description: "Raw power can often be a pass rusher's greatest weapon. When these players enter the zone, this ability increases their win rate and block shed speed even vs. double team blocks.",
+                description: "Raw power can often be a pass rusher's greatest weapon. When these players enter the zone, this ability increases their win rate and block shed speed even vs. double team blocks. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2059,7 +2059,7 @@ const outputLookup = {
             },
 {
                 id: "Double-Me", name: "Double Me", category: "xf", img: "DoubleMe.png", 
-                description: "Aggressive receivers overpower defenders and attack the football. When they enter the zone, this ability increases their success rate on aggressive catches against single coverage.",
+                description: "Aggressive receivers overpower defenders and attack the football. When they enter the zone, this ability increases their success rate on aggressive catches against single coverage. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["RequestedCatchMechanic"], 
@@ -2069,7 +2069,7 @@ const outputLookup = {
             },
 	    {
                 id: "Dual-Threat", name: "Dual Threat", category: "xf", img: "DualThreat.png", 
-                description: "The most devastating defensive players often excel via versatility. When they enter the zone, they have an increased chance of defeating pass blocks, and knocking catches loose.",
+                description: "The most devastating defensive players often excel via versatility. When they enter the zone, they have an increased chance of defeating pass blocks, and knocking catches loose. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2079,7 +2079,7 @@ const outputLookup = {
             },
 	    {
                 id: "Escape-Artist", name: "Escape Artist", category: "xf", img: "EscapeArtist.png", 
-                description: "The slipperiest quarterbacks are capable of exploding out of the pocket at the slightest sign of trouble. When they enter the zone, their scramble speed is increased.",
+                description: "The slipperiest quarterbacks are capable of exploding out of the pocket at the slightest sign of trouble. When they enter the zone, their scramble speed is increased. Forces elite scramle loco; provides 8% boost.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["GetPlayerStaminaPercent", "IsPTMNGLocoActive"], 
@@ -2089,7 +2089,7 @@ const outputLookup = {
             },
 	    {
                 id: "Fearmonger", name: "Fearmonger", category: "xf", img: "Fearmonger.png", 
-                description: "Some pass rushers intimidate quarterbacks with their sheer presence. When they enter the zone, they can apply significant pressure on quarterbacks even while engaged with blockers.",
+                description: "Some pass rushers intimidate quarterbacks with their sheer presence. When they enter the zone, they can apply significant pressure on quarterbacks even while engaged with blockers. 50% additional pressure penalty, Pressure distance increased to 5 yards.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2109,7 +2109,7 @@ const outputLookup = {
             },
 	    {
                 id: "Freight-Train", name: "Freight Train", category: "xf", img: "FreightTrain.png", 
-                description: "Freight Trains are relentless runners who refuse to go down on first contact. When they enter the zone, this ability increases their chance to break the next tackle.",
+                description: "Freight Trains are relentless runners who refuse to go down on first contact. When they enter the zone, this ability increases their chance to break the next tackle. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType", "Gamestyle"], 
@@ -2133,7 +2133,7 @@ const outputLookup = {
             },
 	    {
                 id: "GrabAndSmash", name: "Grab And Smash", category: "xf", img: "GrabAndSmash.png", 
-                description: "Not all receivers need fancy footwork. When they enter the zone, they have increased success chance on stiff arm and truck attempts following the catch..",
+                description: "Not all receivers need fancy footwork. When they enter the zone, they have increased success chance on stiff arm and truck attempts following the catch. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["HadMadeCatch"], 
@@ -2143,7 +2143,7 @@ const outputLookup = {
             },
 {
                 id: "Max-Security", name: "Max Security", category: "xf", img: "MaxSecurity.png", 
-                description: "A surehanded receiver is a quarterback's best friend. When they enter the zone, this ability increases their success rate (and decreases knockout chance) on possession catches.",
+                description: "A surehanded receiver is a quarterback's best friend. When they enter the zone, this ability increases their success rate (and decreases knockout chance) on possession catches. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["RequestedCatchMechanic"], 
@@ -2173,7 +2173,7 @@ const outputLookup = {
             },
 	    {
                 id: "Mossed", name: "Mossed", category: "xf", img: "Mossed.png", 
-                description: "True legendary receivers make the impossible possible. While in the zone, they have greatly increased success rate on aggressive catches 50+ yards from the line of scrimmage.",
+                description: "True legendary receivers make the impossible possible. While in the zone, they have greatly increased success rate on aggressive catches 50+ yards from the line of scrimmage. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["DownfieldThrowDistanceFromLOS", "RequestedCatchMechanic"], 
@@ -2193,7 +2193,7 @@ const outputLookup = {
             },
 	    {
                 id: "Phenom", name: "Phenom", category: "xf", img: "Phenom.png", 
-                description: "Some athletes defy classification as much as they defy boundaries. When they enter the zone, they are highly likely to win the first interaction they have with a defender.",
+                description: "Some athletes defy classification as much as they defy boundaries. When they enter the zone, they are highly likely to win the first interaction they have with a defender. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["HadMadeCatch"], 
@@ -2203,7 +2203,7 @@ const outputLookup = {
             },
 	    {
                 id: "ProReads", name: "Pro Reads", category: "xf", img: "ProReads.png", 
-                description: "For great quarterbacks, vision and anticipation are paramount. When they enter the zone, their first open receiver is highlighted and they ignore defensive pressure.",
+                description: "For great quarterbacks, vision and anticipation are paramount. When they enter the zone, their first open receiver is highlighted and they ignore defensive pressure. 100% chance to be immune to pressure.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2213,7 +2213,7 @@ const outputLookup = {
             },
 	    {
                 id: "RACemUp", name: "RAC 'em Up", category: "xf", img: "RACemUp.png", 
-                description: "RAC receivers fight for every possible yard after making a catch. When they enter the zone, this ability increases their success rate on RAC catches",
+                description: "RAC receivers fight for every possible yard after making a catch. When they enter the zone, this ability increases their success rate on RAC catches. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["RequestedCatchMechanic"], 
@@ -2225,7 +2225,7 @@ const outputLookup = {
             },
             {
                 id: "Reinforcement", name: "Reinforcement", category: "xf", img: "Reinforcement.png", 
-                description: "The game's top defenders excel in all situations. When they enter the zone, this ability increases their chance of defeating run blocks, and disrupting catches via tackles.",
+                description: "The game's top defenders excel in all situations. When they enter the zone, this ability increases their chance of defeating run blocks, and disrupting catches via tackles. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2238,7 +2238,7 @@ const outputLookup = {
             },
 	    {
                 id: "Relentless", name: "Relentless", category: "xf", img: "Relentless.png", 
-                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free.",
+                description: "The most tenacious defenders beat their blocks by sheer force of will. When they enter the zone, their rush move attempts are free. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2268,7 +2268,7 @@ const outputLookup = {
             },
 	    {
                 id: "Run-Stuffer", name: "Run Stuffer", category: "xf", img: "RunStuffer.png", 
-                description: "Run Stuffers can singlehandedly disrupt an offense. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one run blocks.",
+                description: "Run Stuffers can singlehandedly disrupt an offense. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one run blocks. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType"], 
@@ -2280,7 +2280,7 @@ const outputLookup = {
             },
 	    {
                 id: "Satellite", name: "Satellite", category: "xf", img: "Satellite.png", 
-                description: "Some running backs have the talent to be elite receivers. When they enter the zone, this ability increases their success rate on possession and RAC catches against single coverage.",
+                description: "Some running backs have the talent to be elite receivers. When they enter the zone, this ability increases their success rate on possession and RAC catches against single coverage. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["RequestedCatchMechanic"], 
@@ -2304,7 +2304,7 @@ const outputLookup = {
             },
 	    {
                 id: "Shutdown", name: "Shutdown", category: "xf", img: "Shutdown.png", 
-                description: "Shutdown defenders have the talent to erase receivers from the game. When they enter the zone, their coverage is tighter and interceptions are more frequent on contested catches.",
+                description: "Shutdown defenders have the talent to erase receivers from the game. When they enter the zone, their coverage is tighter and interceptions are more frequent on contested catches. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2314,7 +2314,7 @@ const outputLookup = {
             },
 	    {
                 id: "Truzz", name: "Truzz", category: "xf", img: "Truzz.png", 
-                description: "The most effective ball carriers prioritize maintaining possession over all else. When they enter the zone, no tackles made against them will result in a fumble.",
+                description: "The most effective ball carriers prioritize maintaining possession over all else. When they enter the zone, no tackles made against them will result in a fumble. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2324,7 +2324,7 @@ const outputLookup = {
             },
 	    {
                 id: "Universal-Coverage", name: "Universal Coverage", category: "xf", img: "UniversalCoverage.png", 
-                description: "The most physical coverage defenders prevent catches from happening even when their target has hands on the ball. When they enter the zone, they are nearly guaranteed knockouts.",
+                description: "The most physical coverage defenders prevent catches from happening even when their target has hands on the ball. When they enter the zone, they are nearly guaranteed knockouts. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2334,7 +2334,7 @@ const outputLookup = {
             },
 	    {
                 id: "Unstoppable-Force", name: "Unstoppable Force", category: "xf", img: "UnstoppableForce.png", 
-                description: "Elite pass rushers are a mix of strength, speed, and tenacity. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one pass blocks.",
+                description: "Elite pass rushers are a mix of strength, speed, and tenacity. When they enter the zone, this ability increases their win rate and block shed speed against one-on-one pass blocks. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType"], 
@@ -2344,7 +2344,7 @@ const outputLookup = {
             },
 	    {
                 id: "Vanguard", name: "Vanguard", category: "xf", img: "Vanguard.png", 
-                description: "Vanguard players are the reason running backs thank their blockers in the postgame interview. When they enter the zone, they are nearly guaranteed dominant impact block wins.",
+                description: "Vanguard players are the reason running backs thank their blockers in the postgame interview. When they enter the zone, they are nearly guaranteed dominant impact block wins. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: [], 
@@ -2354,7 +2354,7 @@ const outputLookup = {
             },
 	    {
                 id: "Wrecking Ball", name: "Wrecking Ball", category: "xf", img: "WreckingBall.png", 
-                description: "Wrecking Ball runners don't avoid contact. They create it. When they enter the zone, players with this ability will always break tackles during the next 3 stiff arm or trucks.",
+                description: "Wrecking Ball runners don't avoid contact. They create it. When they enter the zone, players with this ability will always break tackles during the next 3 stiff arm or trucks. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["PlayInfo_OffenseType", "Gamestyle"], 
@@ -2364,7 +2364,7 @@ const outputLookup = {
             },
 	    {
                 id: "YACEmUp", name: "YAC 'Em Up", category: "xf", img: "YACEmUp.png", 
-                description: "The best physical receivers don't just come down with the ball, they carry it home. When they enter the zone, they are nearly guaranteed to break their first post-catch tackle.",
+                description: "The best physical receivers don't just come down with the ball, they carry it home. When they enter the zone, they are nearly guaranteed to break their first post-catch tackle. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["HadMadeCatch"], 
@@ -2374,7 +2374,7 @@ const outputLookup = {
             },
 	    {
                 id: "Zone-Hawk", name: "Zone Hawk", category: "xf", img: "ZoneHawk.png", 
-                description: "Zone Hawk defenders lock down a part of the field. When they enter the zone, this ability increases the rate of interceptions while in zone coverage.",
+                description: "Zone Hawk defenders lock down a part of the field. When they enter the zone, this ability increases the rate of interceptions while in zone coverage. 100% chance for all outputs.",
                 xLink: "https://www.mut.gg/abilities/3rd+Down+Threat+Madden",
                 triggers: { 
                     active: ["ZoneDefender"], 
